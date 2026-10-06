@@ -1,0 +1,17 @@
+export const WD_STATUS = Object.freeze({
+  QUEUE: "queue",
+  PROCESS: "process",
+  PENDING: "pending",
+  SUCCESS: "success",
+  FAILED: "failed",
+  MANUAL: "manual",
+});
+
+export const VALID_WITHDRAW_STATUS_TRANSITIONS = Object.freeze({
+  [WD_STATUS.QUEUE]: [WD_STATUS.PROCESS],
+  [WD_STATUS.PROCESS]: [WD_STATUS.PENDING, WD_STATUS.FAILED, WD_STATUS.MANUAL],
+  [WD_STATUS.PENDING]: [WD_STATUS.SUCCESS, WD_STATUS.FAILED, WD_STATUS.MANUAL],
+  [WD_STATUS.SUCCESS]: [],
+  [WD_STATUS.FAILED]: [],
+  [WD_STATUS.MANUAL]: [],
+});

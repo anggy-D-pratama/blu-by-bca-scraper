@@ -1,0 +1,546 @@
+[
+  {
+    "bankName": "BCA SYARIAH",
+    "code": "BCA-S"
+  },
+  {
+    "bankName": "MANDIRI",
+    "code": "MANDIRI"
+  },
+  {
+    "bankName": "BANK RAKYAT INDONESIA (BRI)",
+    "code": "BRI"
+  },
+  {
+    "bankName": "SEABANK",
+    "code": "SEABANK"
+  },
+  {
+    "bankName": "BANK NEGARA INDONESIA (BNI)",
+    "code": "BNI"
+  },
+  {
+    "bankName": "BANK SYARIAH INDONESIA",
+    "code": "BSI"
+  },
+  {
+    "bankName": "BANK JAGO",
+    "code": "JAGO"
+  },
+  {
+    "bankName": "CIMB NIAGA",
+    "code": "CIMB"
+  },
+  {
+    "bankName": "BANK PERMATA",
+    "code": "PERMATA"
+  },
+  {
+    "bankName": "BANK SMBC INDONESIA",
+    "code": "SMBC"
+  },
+  {
+    "bankName": "BANK TABUNGAN NEGARA (BTN)",
+    "code": "BTN"
+  },
+  {
+    "bankName": "PT DIGITAL SOLUSI PRATAMA",
+    "code": null
+  },
+  {
+    "bankName": "ACEH SYARIAH",
+    "code": "ACEH-S"
+  },
+  {
+    "bankName": "ALLO BANK",
+    "code": "ALLO"
+  },
+  {
+    "bankName": "ALTOREM/PAY",
+    "code": null
+  },
+  {
+    "bankName": "ANZ INDONESIA",
+    "code": "ANZ"
+  },
+  {
+    "bankName": "ARTHA GRAHA",
+    "code": "AGI"
+  },
+  {
+    "bankName": "ATMBPLUS",
+    "code": "ATMB"
+  },
+  {
+    "bankName": "BANGKOK BANK",
+    "code": null
+  },
+  {
+    "bankName": "BANK ALADIN SYARIAH",
+    "code": "ALADIN-S"
+  },
+  {
+    "bankName": "BANK AMAR",
+    "code": "AMAR"
+  },
+  {
+    "bankName": "BANK BALI",
+    "code": "BPDBALI"
+  },
+  {
+    "bankName": "BANK BANTEN",
+    "code": "BPDBANTEN"
+  },
+  {
+    "bankName": "BANK BENGKULU",
+    "code": "BPDBENGKULU"
+  },
+  {
+    "bankName": "BANK BJB",
+    "code": "BPDJABAR"
+  },
+  {
+    "bankName": "BANK BNP PARIBAS INDONESIA",
+    "code": "BNP"
+  },
+  {
+    "bankName": "BANK DANAMON",
+    "code": "DANAMON"
+  },
+  {
+    "bankName": "BANK DBS",
+    "code": "DBS"
+  },
+  {
+    "bankName": "BANK DIY",
+    "code": "BPDDIY"
+  },
+  {
+    "bankName": "BANK GANESHA",
+    "code": "GANESHA"
+  },
+  {
+    "bankName": "BANK INA PERDANA",
+    "code": "INA"
+  },
+  {
+    "bankName": "BANK INDEX",
+    "code": "INDEX"
+  },
+  {
+    "bankName": "BANK JAGO UUS",
+    "code": "JAGO-S"
+  },
+  {
+    "bankName": "BANK JAKARTA",
+    "code": null
+  },
+  {
+    "bankName": "BANK JAMBI",
+    "code": "BPDJAMBI"
+  },
+  {
+    "bankName": "BANK JATENG",
+    "code": "BPDJATENG"
+  },
+  {
+    "bankName": "BANK JATIM",
+    "code": "BPDJATIM"
+  },
+  {
+    "bankName": "BANK KALBAR",
+    "code": "BPDKALBAR"
+  },
+  {
+    "bankName": "BANK KALTENG",
+    "code": "KALTENG"
+  },
+  {
+    "bankName": "BANK KALTIMTARA",
+    "code": "BPDKALTIM"
+  },
+  {
+    "bankName": "BANK KASIKORN",
+    "code": null
+  },
+  {
+    "bankName": "BANK KB INDONESIA",
+    "code": null
+  },
+  {
+    "bankName": "BANK LAMPUNG",
+    "code": "BPDLAMPUNG"
+  },
+  {
+    "bankName": "BANK MALUKUMALUT",
+    "code": "BPDMALUKU"
+  },
+  {
+    "bankName": "BANK MAS",
+    "code": "MAS"
+  },
+  {
+    "bankName": "BANK MAYAPADA",
+    "code": "MAYAPADA"
+  },
+  {
+    "bankName": "BANK MEGA",
+    "code": "MEGA"
+  },
+  {
+    "bankName": "BANK MEGA SYARIAH",
+    "code": "MEGA-S"
+  },
+  {
+    "bankName": "BANK MESTIKA",
+    "code": "MESTIKA"
+  },
+  {
+    "bankName": "BANK MIZUHO INDONESIA",
+    "code": "MIZUHO"
+  },
+  {
+    "bankName": "BANK MUAMALAT",
+    "code": "MUAMALAT"
+  },
+  {
+    "bankName": "BANK NAGARI",
+    "code": "NAGARI"
+  },
+  {
+    "bankName": "BANK NAGARI UNIT USAHA SYARIAH",
+    "code": "NAGARI-S"
+  },
+  {
+    "bankName": "BANK NANO SYARIAH",
+    "code": "NANO-S"
+  },
+  {
+    "bankName": "BANK NOBU",
+    "code": "NOBU"
+  },
+  {
+    "bankName": "BANK NTT",
+    "code": "BPDNTB"
+  },
+  {
+    "bankName": "BANK OCBC NISP UUS",
+    "code": "OCBC-S"
+  },
+  {
+    "bankName": "BANK OF AMERICA",
+    "code": "BOA"
+  },
+  {
+    "bankName": "BANK OF INDIA INDONESIA",
+    "code": "BOI"
+  },
+  {
+    "bankName": "BANK PANIN",
+    "code": "PANIN"
+  },
+  {
+    "bankName": "BANK PAPUA",
+    "code": "BPDPAPUA"
+  },
+  {
+    "bankName": "BANK RAYA INDONESIA",
+    "code": "RAYA"
+  },
+  {
+    "bankName": "BANK SAQU INDONESIA",
+    "code": "SAQU"
+  },
+  {
+    "bankName": "BANK SHINHAN",
+    "code": "SHINHAN"
+  },
+  {
+    "bankName": "BANK SINARMAS",
+    "code": "SINARMAS"
+  },
+  {
+    "bankName": "BANK SULSELBAR",
+    "code": "BPDSULSELBAR"
+  },
+  {
+    "bankName": "BANK SULTENG",
+    "code": "BPDSULTENG"
+  },
+  {
+    "bankName": "BANK SULTRA",
+    "code": "BPDSULTENGGARA"
+  },
+  {
+    "bankName": "BANK SULUTGO",
+    "code": "BPDSULUT"
+  },
+  {
+    "bankName": "BANK SUMSELBABEL",
+    "code": "BPDSUMSELBB"
+  },
+  {
+    "bankName": "BANK SUMUT",
+    "code": "BPDSUMUT"
+  },
+  {
+    "bankName": "BANK SYARIAH NASIONAL",
+    "code": "BTPN-S"
+  },
+  {
+    "bankName": "BANK VICTORIA",
+    "code": "VICTORIA"
+  },
+  {
+    "bankName": "BJB SYARIAH",
+    "code": "JABARBANTEN-S"
+  },
+  {
+    "bankName": "BOC INDONESIA",
+    "code": "BOC"
+  },
+  {
+    "bankName": "BPD JAMBI UNIT USAHA SYARIAH",
+    "code": "BPDJAMBI-S"
+  },
+  {
+    "bankName": "BPD KALIMANTAN BARAT UUS",
+    "code": "BPDKALBAR-S"
+  },
+  {
+    "bankName": "BPD KALIMANTAN SELATAN UUS",
+    "code": "BPDKALSEL-S"
+  },
+  {
+    "bankName": "BPD KALIMANTAN TIMUR UTARA UUS",
+    "code": "BPDKALTIMUT-S"
+  },
+  {
+    "bankName": "BPD Kalimantan Selatan",
+    "code": null
+  },
+  {
+    "bankName": "BPD SULAWESI SELATAN BARAT UUS",
+    "code": "BPDSULSELBAR-S"
+  },
+  {
+    "bankName": "BPD SUMSEL BANGKA BELITUNG UUS",
+    "code": "BPDSUMSELBB-S"
+  },
+  {
+    "bankName": "BPD SUMUT UNIT USAHA SYARIAH",
+    "code": "BPDSUMUT-S"
+  },
+  {
+    "bankName": "BPD YOGYAKARTA UUS",
+    "code": "BPDDIYUUS"
+  },
+  {
+    "bankName": "BPR DANUS",
+    "code": null
+  },
+  {
+    "bankName": "BPR EKA",
+    "code": "BPR-EKA"
+  },
+  {
+    "bankName": "BPR KS",
+    "code": "BPR-KS"
+  },
+  {
+    "bankName": "BPR PRIMA MASTER",
+    "code": null
+  },
+  {
+    "bankName": "BPR SLEMAN",
+    "code": "BPR-DIY"
+  },
+  {
+    "bankName": "BPR SUPRA",
+    "code": "BPR-SA"
+  },
+  {
+    "bankName": "BRK SYARIAH",
+    "code": "BPDRIAU"
+  },
+  {
+    "bankName": "BTPN SYARIAH",
+    "code": "BTPN-S"
+  },
+  {
+    "bankName": "BUMI ARTA",
+    "code": "BUMIARTA"
+  },
+  {
+    "bankName": "CAPITAL INDONESIA",
+    "code": "CAPITAL"
+  },
+  {
+    "bankName": "CCB INDONESIA",
+    "code": "CCB"
+  },
+  {
+    "bankName": "CIMB UUS",
+    "code": "CIMB-S"
+  },
+  {
+    "bankName": "CITIBANK",
+    "code": "CITIBANK"
+  },
+  {
+    "bankName": "CTBC INDONESIA",
+    "code": "CTBC"
+  },
+  {
+    "bankName": "DANA",
+    "code": "DANA"
+  },
+  {
+    "bankName": "DEUTSCHE BANK AG.",
+    "code": "DEUTSCHE"
+  },
+  {
+    "bankName": "DOKU",
+    "code": null
+  },
+  {
+    "bankName": "FINNET",
+    "code": null
+  },
+  {
+    "bankName": "HIBANK",
+    "code": null
+  },
+  {
+    "bankName": "HSBC",
+    "code": "HSBC"
+  },
+  {
+    "bankName": "IBK BANK",
+    "code": null
+  },
+  {
+    "bankName": "ICBC",
+    "code": "ICBC"
+  },
+  {
+    "bankName": "JP. MORGAN CHASE BANK",
+    "code": "JPMORGAN"
+  },
+  {
+    "bankName": "JTRUST BANK",
+    "code": "JTBANK"
+  },
+  {
+    "bankName": "KEB HANA",
+    "code": "HANA"
+  },
+  {
+    "bankName": "KROM",
+    "code": "KROM"
+  },
+  {
+    "bankName": "MANDIRI BPR",
+    "code": "BPR-M"
+  },
+  {
+    "bankName": "MANDIRI TASPEN",
+    "code": "MANDIRI-T"
+  },
+  {
+    "bankName": "MAYBANK",
+    "code": "MAYBANK"
+  },
+  {
+    "bankName": "MAYBANK INDONESIA UNIT UUS",
+    "code": "MAYBANK-S"
+  },
+  {
+    "bankName": "MNC BANK",
+    "code": "MNC"
+  },
+  {
+    "bankName": "MUFG BANK, LTD",
+    "code": "MUFJ"
+  },
+  {
+    "bankName": "NEO COMMERCE",
+    "code": "NEO-C"
+  },
+  {
+    "bankName": "NTB SYARIAH",
+    "code": "BPDNTB"
+  },
+  {
+    "bankName": "Nusa Cita Bersama",
+    "code": null
+  },
+  {
+    "bankName": "OCBC NISP",
+    "code": "OCBC"
+  },
+  {
+    "bankName": "OK BANK",
+    "code": "OKE"
+  },
+  {
+    "bankName": "PANIN SYARIAH",
+    "code": "PANIN-S"
+  },
+  {
+    "bankName": "PAYPRO",
+    "code": null
+  },
+  {
+    "bankName": "QNB INDONESIA",
+    "code": "QNB"
+  },
+  {
+    "bankName": "RESONA PERDANIA",
+    "code": "RESONA"
+  },
+  {
+    "bankName": "SAHABAT SAMPOERNA",
+    "code": "SAMPOERNA"
+  },
+  {
+    "bankName": "SBI INDONESIA",
+    "code": "SBI"
+  },
+  {
+    "bankName": "SHOPEEPAY",
+    "code": "SHOPEEPAY"
+  },
+  {
+    "bankName": "STANDARD CHARTERED",
+    "code": "SCB"
+  },
+  {
+    "bankName": "SUPERBANK",
+    "code": "SUPERBANK"
+  },
+  {
+    "bankName": "SYARIAH BUKOPIN",
+    "code": "BUKOPIN-S"
+  },
+  {
+    "bankName": "TCASH",
+    "code": null
+  },
+  {
+    "bankName": "TELKOM",
+    "code": null
+  },
+  {
+    "bankName": "UOB",
+    "code": "UOB"
+  },
+  {
+    "bankName": "WOORI SAUDARA",
+    "code": "WOORI"
+  },
+  {
+    "bankName": "XL TUNAI",
+    "code": null
+  }
+]

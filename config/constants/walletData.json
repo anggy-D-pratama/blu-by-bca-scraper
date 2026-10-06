@@ -1,0 +1,27 @@
+[
+  {
+    "walletName": "GoPay",
+    "walletCode": "60737",
+    "code": "GPAY"
+  },
+  {
+    "walletName": "OVO",
+    "walletCode": "60001",
+    "code": "OVO"
+  },
+  {
+    "walletName": "DANA",
+    "walletCode": "89508",
+    "code": "DANA"
+  },
+  {
+    "walletName": "LinkAja",
+    "walletCode": "60401",
+    "code": "LINK"
+  },
+  {
+    "walletName": "ShopeePay",
+    "walletCode": "89308",
+    "code": "SPAY"
+  }
+]
