@@ -4,9 +4,6 @@ import { logger } from "../helper/logger.js";
 
 export async function start(config) {
   config ??= await getBankAccount();
-  console.log("check config : ", {
-    config
-  })
   await new BotRunner(config).start();
 
 }

@@ -33,6 +33,15 @@ export async function setProcessWd(wd_data) {
     console.log("set wd_data status to process done");
 }
 
+export async function setQueueWd(wd_data) {
+    console.log("set wd_data status to queue");
+    await axios.post("/withdraw/update", {
+        id: wd_data.id,
+        status: WD_STATUS.QUEUE,
+    });
+    console.log("set wd_data status to queue done");
+}
+
 export async function setFailedWd(wd_data, node = null) {
     console.log("set wd_data status to failed");
     await axios.post("/withdraw/update", {

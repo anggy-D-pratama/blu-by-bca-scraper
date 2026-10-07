@@ -7,7 +7,7 @@ import { getMockResponse } from "../dummy/bankAccountResponse.js";
 dotenv.config();
 
 export const axios = ax.create({
-    baseURL:CORE_XYZ_API
+  baseURL: CORE_XYZ_API
 });
 
 const isMockMode = String(process.env.USE_API_MOCK ?? "").toLowerCase() === "true";
@@ -33,7 +33,7 @@ axios.interceptors.response.use(
     if (!isMockMode) {
       return Promise.reject(error);
     }
-    
+
     const requestUrl = error?.config?.url || "";
     const url = requestUrl.split("?")[0];
     const mock = getMockResponse(url, error?.config?.params || {});

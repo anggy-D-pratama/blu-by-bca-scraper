@@ -31,7 +31,7 @@ export class BluAuth extends BasePage {
             if (splitPin.length !== 6) {
                 throw new Error("PIN must be 6 digits long.");
             }
-            
+
             console.log("🔄 Submitting PIN...");
             for (let digit of splitPin) {
                 const buttonSelector = ELEMENTS.PIN_INPUT[`BTN_${digit}`];
