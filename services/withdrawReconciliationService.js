@@ -4,12 +4,14 @@ import { LIST_CODES } from "../config/index.js";
 import { getDateDifference } from "../helper/dateDifference.js";
 import { sendTelegram } from "../helper/index.js";
 import { BluStatement } from "../scraper/pages/bluStatement.js";
+import { WithdrawStatusService } from "./withdrawStatusService.js";
 
 export class WithdrawReconciliationService {
     constructor(client, config) {
         this.client = client;
         this.config = config;
         this.statement = new BluStatement(this.client, this.config);
+        this.withdrawStatusService = new WithdrawStatusService();
     }
 
     getDateDifference(applicationDate, withdrawDate) {
@@ -30,7 +32,7 @@ export class WithdrawReconciliationService {
                     );
 
                     if (wd_data?.unique_code == null) {
-                        await setQueueWd(wd_data);
+                        await this.withdrawStatusService.resolveNextStatus(wd_data);
                     } else {
                         let state = "";
                         if (index === 0) {
@@ -40,8 +42,7 @@ export class WithdrawReconciliationService {
                         }
 
                         let statementData = await this.statement.getStatement(wd_data, state);
-                        await this.resolveNextStatus(wd_data, statementData);
-                        // update db data
+                        await this.withdrawStatusService.resolveNextStatus(wd_data, statementData);
                     }
                 }
             }
@@ -80,74 +81,11 @@ export class WithdrawReconciliationService {
 
                     let statementData = await this.statement.getStatement(wd_data, state);
                     console.log("check data statement : ", statementData);
-                    await this.resolveNextStatus(wd_data, statementData);
+                    await this.withdrawStatusService.resolveNextStatus(wd_data, statementData);
                 }
             }
         } catch (err) {
             console.log("Error processing pending transactions:", err);
-        }
-    }
-
-    async resolveNextStatus(wd_data, statementDatas = []) {
-        switch (wd_data?.status) {
-            case WD_STATUS.PROCESS:
-                await this.validateProcessStatusUpdate(wd_data, statementDatas);
-                break;
-            case WD_STATUS.QUEUE:
-            // decide go to process
-            case WD_STATUS.PENDING:
-                await this.validatePendingStatusUpdate(wd_data, statementDatas);
-                break;
-            default:
-                // give error handler here!
-                break;
-        }
-    }
-
-    async validateProcessStatusUpdate(wd_data, statement_datas) {
-        if (statement_datas?.length === 1) {
-            // cek statement status
-            if (!statement_datas[0]?.status?.toLowerCase().includes("tidak")) {
-                // berhasil = pending
-                await setPendingWd(wd_data);
-            } else {
-                // gagal = failed
-                await setFailedWd(wd_data);
-            }
-        } else {
-            // go to manual
-            await sendTelegram(`Duplicated data found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
-            await setManualWd(wd_data);
-        }
-    }
-
-    async validatePendingStatusUpdate(wd_data, statement_datas) {
-        if (statement_datas?.length === 1) {
-            // cek statement status
-            if (!statement_datas[0]?.status?.toLowerCase().includes("tidak")) {
-                // berhasil = success
-                console.log("check data update success : ",
-                    wd_data, statement_datas
-                )
-                await setSuccessWd(wd_data);
-            } else {
-                // gagal = failed
-                console.log("check data update failed : ",
-                    wd_data, statement_datas
-                )
-                await setFailedWd(wd_data);
-            }
-        } else {
-            // go to manual
-            console.log("check data update manual : ",
-                wd_data, statement_datas
-            )
-            if (statement_datas?.length > 1) {
-                await sendTelegram(`Duplicated data found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
-            } else {
-                await sendTelegram(`Data not found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
-            }
-            await setManualWd(wd_data);
         }
     }
 }

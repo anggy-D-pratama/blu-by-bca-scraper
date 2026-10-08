@@ -8,7 +8,7 @@ export class BluAuth extends BasePage {
         try {
             await this.actions.waitForElement(
                 ELEMENTS.LOGIN.BTN_LOGIN,
-                10 * 1000
+                30 * 1000
             );
 
             await this.actions.clickElement(

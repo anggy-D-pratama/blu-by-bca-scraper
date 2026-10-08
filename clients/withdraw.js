@@ -62,6 +62,7 @@ export async function setPendingWd(wd_data, notes = null) {
     await axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.PENDING,
+        unique_code: wd_data?.unique_code,
         notes,
     });
     console.log("set wd_data status to pending done");

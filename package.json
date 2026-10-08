@@ -1,7 +1,7 @@
 {
-  "name": "bca-mobile-scraper",
+  "name": "blu-by-bca-mobile-scraper",
   "version": "1.0.0",
-  "description": "Project for authorized BCA Mobile data scraping",
+  "description": "Project for authorized Blu by BCA Mobile data scraping",
   "main": "index.js",
   "type": "module",
   "scripts": {

@@ -5,11 +5,13 @@ import { ACCOUNT_NUMBER, LIST_CODES } from "../config/index.js";
 import { screenshot, sendTelegram } from "../helper/index.js";
 import { BluTopup } from "../scraper/pages/bluTopup.js";
 import { BluTransfer } from "../scraper/pages/bluTransfer.js";
+import { WithdrawStatusService } from "./withdrawStatusService.js";
 
 export class WithdrawService {
     constructor(client, config) {
         this.client = client;
         this.config = config;
+        this.withdrawStatusService = new WithdrawStatusService();
     }
 
     async processQueue(config, init = false) {
@@ -33,6 +35,7 @@ export class WithdrawService {
                 } else {
                     const isValid = await validateWd(wd_data);
                     const dailyLimit = await getDailyLimit();
+
                     console.log("check data is valid : ", isValid);
                     console.log("check data daily limit : ", dailyLimit);
 
@@ -44,13 +47,12 @@ export class WithdrawService {
                         }
                         console.log("processing payout with code : " + wd_data.transaction_no);
 
-                        // set process wd
-                        await setProcessWd(wd_data);
-                        //update into cache
-
                         // check transfer or ewallet
                         const bankData = LIST_CODES?.bank?.filter((el) => el.code === wd_data?.bank_code);
                         const walletData = LIST_CODES?.wallet?.filter((el) => el.code === wd_data?.bank_code);
+
+                        // set process wd
+                        await this.withdrawStatusService.resolveNextStatus({ ...wd_data, bankData, walletData });
 
                         if (bankData?.length > 0 || walletData?.length > 0) {
                             await this.processWithdraw(wd_data, bankData, walletData);
@@ -59,7 +61,7 @@ export class WithdrawService {
                             await sendTelegram("⛔Invalid Bank Code⛔\n\nTransaction No: " + wd_data?.transaction_no +
                                 "\nBank Code: " + wd_data?.bank_code +
                                 "\nMessage: Bank code not recognized or not supported!\n\nPlease make sure bank code is supported in transfer using Mandiri Account");
-                            await setFailedWd(wd_data, "Transaction failed because of :: bank_code not supported on Auto Payout IDR Mandiri");
+                            await this.withdrawStatusService.resolveNextStatus(wd_data);
                         }
                     }
                 }
@@ -73,14 +75,26 @@ export class WithdrawService {
     async processWithdraw(wd_data, bankData = null, walletData = null) {
         const transfer = new BluTransfer(this.client, this.config);
         const topup = new BluTopup(this.client, this.config);
-        
+
         if (bankData?.length > 0) {
             let dataTransfer = await transfer.processTransfer(wd_data, bankData);
             console.log("check data transfer return : ", dataTransfer);
+            await this.withdrawStatusService.resolveNextStatus(wd_data, [
+                {
+                    status: dataTransfer.text,
+                    refNo: dataTransfer.ref_no
+                }
+            ]);
         } else if (walletData?.length > 0) {
             let dataTopup = await topup.processTopup(wd_data, walletData);
             console.log("check data transfer return : ", dataTopup)
+            await this.withdrawStatusService.resolveNextStatus(wd_data, [
+                {
+                    status: dataTopup.text,
+                    refNo: dataTopup.ref_no
+                }
+            ]);
         }
-        
+
     }
 }
