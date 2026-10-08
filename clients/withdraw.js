@@ -42,7 +42,7 @@ export async function setQueueWd(wd_data) {
     console.log("set wd_data status to queue done");
 }
 
-export async function setFailedWd(wd_data, node = null) {
+export async function setFailedWd(wd_data, notes = null) {
     console.log("set wd_data status to failed");
     await axios.post("/withdraw/update", {
         id: wd_data.id,
@@ -50,6 +50,26 @@ export async function setFailedWd(wd_data, node = null) {
         notes,
     });
     console.log("set wd_data status to failed done");
+}
+
+export async function setPendingWd(wd_data, notes = null) {
+    console.log("set wd_data status to pending");
+    await axios.post("/withdraw/update", {
+        id: wd_data.id,
+        status: WD_STATUS.PENDING,
+        notes,
+    });
+    console.log("set wd_data status to pending done");
+}
+
+export async function setManualWd(wd_data, notes = null) {
+    console.log("set wd_data status to manual");
+    await axios.post("/withdraw/update", {
+        id: wd_data.id,
+        status: WD_STATUS.MANUAL,
+        notes,
+    });
+    console.log("set wd_data status to manual done");
 }
 
 export async function validateWd(wd_data) {

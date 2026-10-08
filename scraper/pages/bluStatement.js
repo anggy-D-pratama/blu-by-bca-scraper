@@ -27,14 +27,24 @@ export class BluStatement extends BasePage {
  * @param {string} [wd_data.bank_account] - Nomor rekening tujuan (fallback pencocokan).
  * @returns {Promise<Array<{refNo: string, status: string, note: string, amount: string}>>} Array dari detail transaksi yang cocok.
  */
-    async getStatement(wd_data) {
+    async getStatement(wd_data, state = "") {
+        this.extractedDetails = [];
         this.wd_data = wd_data;
         try {
-            await this.homepageFlow();
-            await this.historyPageFlow();
+            console.log(`start checking for transaction ${wd_data.transaction_no}`);
+            if (state === "init") {
+                await this.homepageFlow();
+                await this.historyPageFlow();
+            }
             await this.statementPageFlow();
             await this.filterPageFlow();
             await this.mapStatementPageFlow();
+            if (state === "exit") {
+                await this.actions.pause(2 * 1000);
+                await this.client.back()
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+            }
         } catch (err) {
             await handleElementError(err, this.client);
             return this.extractedDetails;
@@ -70,7 +80,7 @@ export class BluStatement extends BasePage {
 
     async statementPageFlow() {
         await this.actions.waitForElement(
-            ELEMENTS.STATEMENT_PAGE.HISTORY_LABEL,
+            ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS,
             30 * 1000
         );
 
@@ -152,34 +162,23 @@ export class BluStatement extends BasePage {
     }
 
     async navigateFilterDate(type, diff, direction) {
-        let dirc = 0;
-        switch (direction) {
-            case "previous":
-                dirc = 0;
-                break;
-            case "next":
-                dirc = 2;
-                break;
-            default:
-                dirc = 1;
-                break;
-        }
-
         for (let index = 0; index < diff; index++) {
             let getNav = await this.actions.findElements(
                 ELEMENTS.STATEMENT_PAGE.FILTER_SELECTION_CHILDREN(type)
             )
-            await getNav[dirc]?.click();
+            if (direction === "previous") {
+                await getNav[0]?.click();
+            } else if (direction === "next") {
+                await getNav[getNav?.length - 1]?.click();
+            }
         }
     }
 
     async mapStatementPageFlow() {
-        // 5. statement page
         await this.actions.waitForElement(
-            ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS, 10 * 1000
+            ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS, 30 * 1000
         );
 
-        // 5.1 get collection of transactions
         let needSwipe = true;
         const processedIds = new Set();
         let oldLastTransactionId = {};
@@ -242,6 +241,8 @@ export class BluStatement extends BasePage {
                     }
 
                     this.extractedDetails.push(this.details);
+
+                    this.client.back();
                     return this.extractedDetails;
                 }
 

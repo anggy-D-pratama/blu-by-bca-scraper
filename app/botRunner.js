@@ -1,6 +1,5 @@
 import { Scraper } from "../scraper/appiumClient.js";
 import { BluAuth } from "../scraper/pages/bluAuth.js";
-import { StatementService } from "../services/statementService.js";
 import { WithdrawReconciliationService } from "../services/withdrawReconciliationService.js";
 import { WithdrawService } from "../services/withdrawService.js";
 
