@@ -116,6 +116,7 @@ export class WithdrawReconciliationService {
             }
         } else {
             // go to manual
+            await sendTelegram(`Duplicated data found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
             await setManualWd(wd_data);
         }
     }
@@ -141,6 +142,11 @@ export class WithdrawReconciliationService {
             console.log("check data update manual : ",
                 wd_data, statement_datas
             )
+            if (statement_datas?.length > 1) {
+                await sendTelegram(`Duplicated data found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
+            } else {
+                await sendTelegram(`Data not found with transaction no : ${wd_data?.transaction_no}\nplease proceed with manual confirmation!`);
+            }
             await setManualWd(wd_data);
         }
     }

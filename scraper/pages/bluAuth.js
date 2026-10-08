@@ -1,6 +1,6 @@
 import { writeFile } from "node:fs/promises";
 import { ELEMENTS } from "../../config/constants/elements.js";
-import { handleElementError, swipeSmall } from "../../helper/index.js";
+import { handleElementError } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 
 export class BluAuth extends BasePage {

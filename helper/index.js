@@ -30,7 +30,7 @@ async function sendTelegram(msg, is_photo = "false", is_file = "false") {
   }
 }
 
-async function screenshot(client, path) {
+async function screenshot(client, path = "screenshot/photo.png") {
   try {
     // await client.waitForTimeout(1000); // Wait for any final rendering
     await client.saveScreenshot(path);
@@ -62,6 +62,7 @@ async function screenshot(client, path) {
 
     await axios.post("/telegram/save-image", formData, {
       headers: formData.getHeaders(),
+      _imagePath: path
     });
   } catch (error) {
     console.error("Error taking screenshot:", error);
@@ -73,7 +74,11 @@ async function handleElementError(err, client, defaultStatus = WD_STATUS.FAILED)
     // TAKE SS
     const time = new Date().toISOString().replace(/:/g, '-');
     await screenshot(client, `./screenshot/${time}.png`);
+
     // SEND NOTIF
+    await sendTelegram(
+      `UI Element not displayed with error : ${err.message}`
+    );
   }
   throw err;
 }

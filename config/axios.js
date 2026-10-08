@@ -3,6 +3,7 @@ import ax from "axios";
 import dotenv from "dotenv";
 import { API_KEY, CORE_XYZ_API, SECRET_KEY } from "./index.js";
 import { getMockResponse } from "../dummy/bankAccountResponse.js";
+import { TelegramDevInterceptor } from "../dummy/telegramDevInterence.js";
 
 dotenv.config();
 
@@ -24,6 +25,9 @@ axios.interceptors.request.use((config) => {
   config.headers["x-timestamp"] = timestamp;
   config.headers["x-signature"] = signature;
 
+  if (isMockMode && config.url && config.url.includes("/telegram")) {
+    config = TelegramDevInterceptor.handle(config);
+  }
   return config;
 });
 

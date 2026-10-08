@@ -4,8 +4,8 @@ import { logger } from "../helper/logger.js";
 
 export async function start(config) {
   config ??= await getBankAccount();
+  console.log("🚀 Starting Bot Runner...");
   await new BotRunner(config).start();
-
 }
 
 export function reportStartupError(error) {

@@ -1,5 +1,5 @@
 import { ELEMENTS } from "../../config/constants/elements.js";
-import { handleElementError, swipeSmall } from "../../helper/index.js";
+import { handleElementError, screenshot, swipeSmall } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 import { BluAuth } from "./bluAuth.js";
 
@@ -101,6 +101,10 @@ export class BluTransfer extends BasePage {
                 10 * 1000
             );
 
+            console.log("Take evidence of confirmation page");
+            await sendTelegram("Take evidence of confirmation page");
+            await screenshot(this.client);
+
             await this.actions.clickElement(
                 ELEMENTS.TRANSFER.TRANSFER_BTN,
                 true
@@ -115,6 +119,9 @@ export class BluTransfer extends BasePage {
             );
 
             await this.actions.pause(3 * 1000);
+
+            console.log("Take summary screenshot");
+            await screenshot(this.client);
 
             let transactionStatus = await this.actions.getText(
                 ELEMENTS.TRANSACTION_SUMMARY.TRANSFER_SUMMARY_STATUS

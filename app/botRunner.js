@@ -1,3 +1,4 @@
+import { sendTelegram } from "../helper/index.js";
 import { Scraper } from "../scraper/appiumClient.js";
 import { BluAuth } from "../scraper/pages/bluAuth.js";
 import { WithdrawReconciliationService } from "../services/withdrawReconciliationService.js";
@@ -10,9 +11,11 @@ export class BotRunner {
     }
 
     async start() {
-        console.log("🚀 Starting Bot Runner...");
-
+        await sendTelegram(
+            "Launching bot, please make sure the devices are connected!!"
+        );
         const client = await this.scraper.start();
+        // database connection check
 
         this.withdrawService = new WithdrawService(client, this.config);
         this.withdrawReconsiliationService = new WithdrawReconciliationService(client, this.config);
