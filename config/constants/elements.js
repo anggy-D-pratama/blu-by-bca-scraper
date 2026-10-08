@@ -72,6 +72,7 @@ export const ELEMENTS = Object.freeze({
             REF_NO: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clRef"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvNoRef"]`,
             AMOUNT: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvText"]`,
             NOTE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvNote"]`,
+            ACCOUNT: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvText2"]`
         }
     },
     PIN_INPUT: {

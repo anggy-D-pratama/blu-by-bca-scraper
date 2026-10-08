@@ -13,7 +13,8 @@ export class BluStatement extends BasePage {
         refNo: "",
         status: "",
         note: "",
-        amount: 0
+        amount: 0,
+        account: ""
     };
 
     /**
@@ -222,6 +223,10 @@ export class BluStatement extends BasePage {
                     ELEMENTS.STATEMENT_PAGE.DETAIL.AMOUNT
                 );
 
+                let detailAccount = await this.actions.getText(
+                    ELEMENTS.STATEMENT_PAGE.DETAIL.ACCOUNT
+                );
+
                 let detailNote = "";
                 if (await this.actions.checkExistingElement(ELEMENTS.STATEMENT_PAGE.DETAIL.NOTE)) {
                     detailNote = await this.actions.getText(
@@ -237,15 +242,38 @@ export class BluStatement extends BasePage {
                         refNo: detailRefNo,
                         status: detailStatus,
                         note: detailNote,
-                        amount: detailAmount
+                        amount: detailAmount,
+                        account: detailAccount
                     }
 
                     this.extractedDetails.push(this.details);
 
                     this.client.back();
                     return this.extractedDetails;
+                } else if (this.wd_data?.unique_code === "" || this.wd_data?.unique_code === null) {
+                    let remarkMatch = true;
+                    if (this.wd_data?.bank_data > 0 && this.wd_data?.remark !== detailNote) {
+                        remarkMatch = false;
+                    }
+                    if (
+                        remarkMatch 
+                        && this.wd_data?.amount === Number(detailAmount.replace(/[^0-9]/g, "")) 
+                        && detailAccount.replace(/\s+/g, "").includes(this.wd_data?.bank_account)
+                    ) {
+                        this.details = {
+                            refNo: detailRefNo,
+                            status: detailStatus,
+                            note: detailNote,
+                            amount: detailAmount,
+                            account: detailAccount
+                        }
+                        this.extractedDetails.push(this.details);
+                    }
                 }
-
+                if (this.extractedDetails?.length > 1) {
+                    this.client.back();
+                    return this.extractedDetails;
+                }
                 this.client.back();
             }
 

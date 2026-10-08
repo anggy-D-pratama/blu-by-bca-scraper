@@ -19,7 +19,8 @@ export class BotRunner {
         this.auth = new BluAuth(client, this.config);
 
         await this.runAuthFlow();
-        await this.checkingProcessTransactions();
+        await this.checkProcessTransactions();
+        await this.checkPendingTransactions();
         await this.processQueue();
     }
 
@@ -36,8 +37,12 @@ export class BotRunner {
         }
     }
 
-    async checkingProcessTransactions() {
+    async checkProcessTransactions() {
         await this.withdrawReconsiliationService.withdrawProcessStatus();
+    }
+
+    async checkPendingTransactions() {
+        await this.withdrawReconsiliationService.withdrawPendingStatus();
     }
 
     async processQueue() {

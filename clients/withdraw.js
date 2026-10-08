@@ -19,6 +19,11 @@ export async function getProcessWithdraws(bankAccountId) {
     return Array.isArray(withdraws) ? withdraws : [];
 }
 
+export async function getPendingWithdraws(bankAccountId) {
+    const withdraws = await getWithdraws(bankAccountId, WD_STATUS.PENDING);
+    return Array.isArray(withdraws) ? withdraws : [];
+}
+
 export async function getQueueWithdraws(bankAccountId) {
     const withdraws = await getWithdraws(bankAccountId, WD_STATUS.QUEUE);
     return Array.isArray(withdraws) ? withdraws : [];
@@ -60,6 +65,16 @@ export async function setPendingWd(wd_data, notes = null) {
         notes,
     });
     console.log("set wd_data status to pending done");
+}
+
+export async function setSuccessWd(wd_data, notes = null) {
+    console.log("set wd_data status to success");
+    await axios.post("/withdraw/update", {
+        id: wd_data.id,
+        status: WD_STATUS.SUCCESS,
+        notes,
+    });
+    console.log("set wd_data status to success done");
 }
 
 export async function setManualWd(wd_data, notes = null) {
