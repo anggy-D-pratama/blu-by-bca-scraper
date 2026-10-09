@@ -1,9 +1,12 @@
 import { axios } from "../config/axios.js";
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
+import { withRetry, DELAY_NON_CRITICAL, DELAY_CRITICAL } from "../helper/retry.js";
 
 async function get(endpoint, params) {
-    const response = await axios.get(endpoint, { params });
-    return response.data;
+    return await withRetry(async () => {
+        const response = await axios.get(endpoint, { params });
+        return response.data;
+    }, DELAY_NON_CRITICAL, `GET ${endpoint}`);
 }
 
 async function getWithdraws(bankAccountId, status) {
@@ -31,69 +34,69 @@ export async function getQueueWithdraws(bankAccountId) {
 
 export async function setProcessWd(wd_data) {
     console.log("set wd_data status to process");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.PROCESS,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [process]");
     console.log("set wd_data status to process done");
 }
 
 export async function setQueueWd(wd_data) {
     console.log("set wd_data status to queue");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.QUEUE,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [queue]");
     console.log("set wd_data status to queue done");
 }
 
 export async function setFailedWd(wd_data, notes = null) {
     console.log("set wd_data status to failed");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.FAILED,
         notes,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [failed]");
     console.log("set wd_data status to failed done");
 }
 
 export async function setPendingWd(wd_data, notes = null) {
     console.log("set wd_data status to pending");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.PENDING,
         unique_code: wd_data?.unique_code,
         notes,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [pending]");
     console.log("set wd_data status to pending done");
 }
 
 export async function setSuccessWd(wd_data, notes = null) {
     console.log("set wd_data status to success");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.SUCCESS,
         notes,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [success]");
     console.log("set wd_data status to success done");
 }
 
 export async function setManualWd(wd_data, notes = null) {
     console.log("set wd_data status to manual");
-    await axios.post("/withdraw/update", {
+    await withRetry(() => axios.post("/withdraw/update", {
         id: wd_data.id,
         status: WD_STATUS.MANUAL,
         notes,
-    });
+    }), DELAY_CRITICAL, "POST /withdraw/update [manual]");
     console.log("set wd_data status to manual done");
 }
 
 export async function validateWd(wd_data) {
-    return await axios.post("/withdraw/validate", {
+    return await withRetry(() => axios.post("/withdraw/validate", {
         id: wd_data.id,
         transaction_no: wd_data.transaction_no,
         transaction_code: wd_data.transaction_code,
-    }).then(async response => {
+    }), DELAY_CRITICAL, "POST /withdraw/validate").then(async response => {
         if (response.data.status !== "success") {
             const errMessage = response.data?.errors ?? response?.data?.data ?? response?.data ?? "Invalid Withdraw request transactions...";
             console.error("Failed to validate withdraw request:", errMessage);

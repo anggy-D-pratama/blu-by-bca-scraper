@@ -24,26 +24,30 @@ Transitions to `failed` or `manual` can occur from any state on unrecoverable va
 1. **`checkingProcessTransactions`**:
    - `GET /withdraw?bank_account_id={id}&status=process`
    - Ambil data dari local cache via `transaction_no`.
-   - Cek keberadaan transaksi di statement lokal/inbox:
-     - Ditemukan -> update `success` (API & local cache).
-     - Belum -> rollback ke `queue` (API & local cache).
+   - Cek keberadaan transaksi via UI Scraper mutasi/inbox:
+     - Ditemukan -> update `pending` (API & local cache), dengan membawa ref_no.
+     - Belum -> rollback ke `queue` (API & local cache) jika `unique_code` null.
 2. **Pause (10s)**
 3. **`checkingPendingTransactions`**:
    - `GET /withdraw?bank_account_id={id}&status=pending`
-   - Jika ada `unique_code`: cek statement berdasarkan `unique_code`. Ketemu -> `success`, tidak -> notifikasi manual.
-   - Jika tanpa `unique_code`: cocokkan `remark` & `amount`.
-     - 1 match: update `success`.
-     - 0 match: notifikasi verifikasi manual.
-     - \>1 match: notifikasi duplicate (dilarang auto-success).
+   - Cek dan sinkronisasikan mutasi via UI berdasarkan transaksi dengan status pending:
+     - Ditemukan (Status di UI tidak mengandung kata "tidak") -> update `success`.
+     - Tidak Ditemukan -> notifikasi manual (`manual`).
+     - Gagal di UI (Misal: "Transaksi tidak berhasil") -> update `failed`.
+     - \>1 match di UI: notifikasi duplicate dan arahkan ke konfirmasi `manual`.
 4. **`getStatement` (Sync Mutasi)**:
    - Ambil transaksi terbaru via UI (Inbox / list statement), simpan/merge ke SQLite.
 5. **`processQueue`**:
    - `GET /withdraw?status=queue&bank_account_id={id}`
+   - Idempotency guard: cek local cache via `transaction_no` (skip jika sudah `process`, `pending`, atau `success`).
+   - Cek mutasi lokal SQLite (jika ada match -> update status, skip transfer).
    - `POST /withdraw/validate` dengan `{ id, transaction_no, transaction_code }`. Stop jika gagal.
-   - Cek balance (jika kurang -> set `failed` + notif).
+   - Cek limit harian (`GET /bank-account/daily-limit`).
    - Set status `process` di local cache & backend.
    - Jalankan UI `payoutAction`.
-   - Jika sukses: ambil reference/`unique_code`, simpan screenshot, update backend ke `pending`, simpan `ref_no` di local cache.
+   - Cek balance & biaya transfer di UI pada halaman konfirmasi:
+     - Jika saldo kurang -> batalkan alur (back navigasi), set `failed` + alert Telegram.
+   - Jika sukses transfer: ambil reference/`unique_code`, simpan screenshot, update backend ke `pending`, simpan `ref_no` di local cache.
 
 ---
 
@@ -95,28 +99,47 @@ Tabel: `withdraw_requests`
 ## Directory Structure
 ```text
 .
-├── index.js               # Entry point, menjalankan main loop (start -> loop)
-├── package.json           # Dependencies, scripts ("type": "module")
-├── .env                   # Secret config: ACCOUNT_NUMBER, API_BASE_URL, PIN (gitignored)
-├── local_cache.db         # SQLite file hasil generate runtime (gitignored)
+├── index.js                               # Entry point
+├── package.json                           # Dependencies, scripts ("type": "module")
+├── .env                                   # Secret config: ACCOUNT_NUMBER, API_BASE_URL, PIN (gitignored)
+├── local_cache.db                         # SQLite file hasil generate runtime (gitignored)
+├── app/
+│   └── botRunner.js                       # Main loop orchestrator
 ├── config/
-│   └── index.js           # Load dan validasi variable .env
-│   └── axios.js           # Custom fetch dengan membawa behaviour axios
-│   └── constants          # Data statis 
+│   ├── index.js                           # Load dan validasi variable .env
+│   ├── axios.js                           # Custom Axios instance
+│   └── constants/                         # Selector UI & konstanta status
+│       ├── elements.js
+│       ├── withdrawStatus.js
+│       ├── bankData.json
+│       └── walletData.json
 ├── db/
-│   └── connection.js      # Schema builder & queries tabel `withdraw_requests` (Knex)
-│   └── *Repository.js     # Query berdasarkan service
+│   ├── connection.js                      # Schema builder & SQLite connection (Knex)
+│   └── cacheRepository.js                 # Query tabel withdraw_requests
 ├── clients/
-│   └── api.js             # HTTP Client (Axios) untuk GET/POST ke backend + logic retry
+│   ├── withdraw.js                        # Endpoint /withdraw, /validate, /update + retry logic
+│   └── bankAccount.js                     # Endpoint /bank-account/daily-limit + retry logic
 ├── scraper/
-│   ├── driver.js          # Setup Appium/WebDriverIO connection & session
-│   └── blu.js             # Logic interaksi UI: getStatement, payoutAction (pindah layar, input PIN)
+│   ├── appiumClient.js                    # Inisialisasi Appium driver
+│   ├── client.js                          # Driver session manager
+│   ├── start.js                           # Script lifecycle scraper
+│   └── pages/                             # Page Object Model
+│       ├── BasePage.js
+│       ├── bluAuth.js                     # Login & input PIN
+│       ├── bluTransfer.js                 # Alur payout/transfer
+│       ├── bluStatement.js                # Scraping mutasi
+│       └── bluTopup.js                    # Alur e-wallet/topup
 ├── services/
-│   ├── loop.js            # Orkestrator alur: checkingProcess, checkingPending, processQueue
-│   └── notifier.js        # Integrasi Telegram (notif start, error, success, lampiran gambar)
-├── utils/
-│   ├── logger.js          # Helper log console (masking data sensitif)
-│   └── ocr.js             # Integrasi sharp & tesseract (opsional)
+│   ├── withdrawService.js                 # Orkestrasi processQueue
+│   ├── withdrawStatusService.js           # Orkestrasi checkingProcessTransactions
+│   ├── withdrawReconciliationService.js   # Orkestrasi checkingPendingTransactions
+│   └── getStatementService.js             # Orkestrasi getStatement (sync mutasi)
+├── helper/
+│   ├── logger.js                          # Helper log console (masking data sensitif)
+│   ├── appiumHelpers.js                   # UI selector & wait helpers
+│   ├── retry.js                           # Retry wrapper (exponential backoff & delays)
+│   └── dateDifference.js
 └── test/
-    └── cache.test.js      # Test DB mandiri (node:assert)
+    ├── cache.test.js                      # Test DB mandiri (node:assert)
+    └── test/config.test.js                # Test validasi config
 ```
