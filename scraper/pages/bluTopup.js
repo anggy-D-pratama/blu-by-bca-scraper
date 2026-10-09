@@ -1,5 +1,5 @@
 import { ELEMENTS } from "../../config/constants/elements.js";
-import { handleElementError, screenshot, sendTelegram } from "../../helper/index.js";
+import { handleElementError, parseRupiah, screenshot, sendTelegram } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 import { BluAuth } from "./bluAuth.js";
 
@@ -30,8 +30,11 @@ export class BluTopup extends BasePage {
 
             await this.processSelectedEWalletPage();
 
-            await this.processConfirmationPage();
+            let isConfirm = await this.processConfirmationPage();
 
+            if (!isConfirm) {
+                return this.dataResponse;
+            }
             await this.actions.pause(2 * 1000);
             await new BluAuth(this.client, this.config).submitPin();
             await this.actions.pause(3 * 1000);
@@ -142,6 +145,34 @@ export class BluTopup extends BasePage {
         await sendTelegram("Take evidence of confirmation page");
         await screenshot(this.client);
 
+        let currentBalance = await this.actions.getText(
+            ELEMENTS.TRANSFER.TRANSFER_CURRENT_BALANCE_INFO
+        );
+
+        let totalTransaction = await this.actions.getText(
+            ELEMENTS.TRANSFER.TRANSFER_TOTAL_INFO
+        );
+
+        let currentBalanceParsed = await parseRupiah(currentBalance);
+        let totalTransactionParsed = await parseRupiah(totalTransaction);
+
+        if (currentBalanceParsed - totalTransactionParsed < 0) {
+            console.log("Balance not enough for this transaction");
+            await sendTelegram(`Transaction number ${this.wd_data?.transaction_no} can't be proceed
+                    \nReason : Not enough balance
+                    \nCurrent Balance : Rp ${currentBalanceParsed}
+                    \nTotal Transaction : Rp ${totalTransactionParsed}`);
+            await screenshot(this.client);
+
+            await this.actions.pause(2 * 1000);
+            await this.client.back();
+            await this.actions.pause(2 * 1000);
+            await this.client.back();
+            await this.actions.pause(2 * 1000);
+            await this.client.back();
+            return false;
+        }
+
         await this.actions.clickElement(
             ELEMENTS.TOPUP.CONFIRMATION_BTN, true
         );
@@ -160,7 +191,10 @@ export class BluTopup extends BasePage {
             await this.actions.back();
             await this.actions.pause(2 * 1000);
             await this.actions.back();
+            return false;
         }
+
+        return true;
     }
 
     async processSummaryPage() {

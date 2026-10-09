@@ -1,5 +1,5 @@
 import { ELEMENTS } from "../../config/constants/elements.js";
-import { handleElementError, screenshot, swipeSmall } from "../../helper/index.js";
+import { handleElementError, parseRupiah, screenshot, sendTelegram, swipeSmall } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 import { BluAuth } from "./bluAuth.js";
 
@@ -98,8 +98,38 @@ export class BluTransfer extends BasePage {
             // confirmation page
             await this.actions.waitForElement(
                 ELEMENTS.TRANSFER.TRANSFER_TOTAL_INFO,
-                10 * 1000
+                30 * 1000
             );
+
+            let currentBalance = await this.actions.getText(
+                ELEMENTS.TRANSFER.TRANSFER_CURRENT_BALANCE_INFO
+            );
+
+            let totalTransaction = await this.actions.getText(
+                ELEMENTS.TRANSFER.TRANSFER_TOTAL_INFO
+            );
+
+            let currentBalanceParsed = await parseRupiah(currentBalance);
+            let totalTransactionParsed = await parseRupiah(totalTransaction);
+
+            if (currentBalanceParsed - totalTransactionParsed < 0) {
+                console.log("Balance not enough for this transaction");
+                await sendTelegram(`Transaction number ${wd_data?.transaction_no} can't be proceed
+                    \nReason : Not enough balance
+                    \nCurrent Balance : Rp ${currentBalanceParsed}
+                    \nTotal Transaction : Rp ${totalTransactionParsed}`);
+                await screenshot(this.client);
+
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                return dataResponse;
+            }
 
             console.log("Take evidence of confirmation page");
             await sendTelegram("Take evidence of confirmation page");
@@ -172,23 +202,4 @@ export class BluTransfer extends BasePage {
             return false;
         }
     }
-}
-
-export function parseRupiahToMinorUnits(value) {
-    const normalized = value.trim().replace(/^Rp\s*/i, "").replace(/\s/g, "");
-    const match = normalized.match(/^(\d+|\d{1,3}(?:\.\d{3})+)(?:,(\d{1,2}))?$/);
-
-    if (!match) {
-        throw new Error(`Invalid Rupiah amount: "${value}"`);
-    }
-
-    const rupiah = Number(match[1].replace(/\./g, ""));
-    const minorUnits = Number((match[2] ?? "").padEnd(2, "0"));
-
-    const minorUnitsTotal = rupiah * 100 + minorUnits;
-    if (!Number.isSafeInteger(minorUnitsTotal)) {
-        throw new Error(`Rupiah amount is outside the supported range: "${value}"`);
-    }
-
-    return minorUnitsTotal;
 }

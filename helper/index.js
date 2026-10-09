@@ -109,6 +109,39 @@ async function swipeSmall(client, deltaX, deltaY, duration = 200) {
   ]);
 }
 
+async function parseRupiahToMinorUnits(value) {
+  const normalized = value.trim().replace(/^Rp\s*/i, "").replace(/\s/g, "");
+  const match = normalized.match(/^(\d+|\d{1,3}(?:\.\d{3})+)(?:,(\d{1,2}))?$/);
+
+  if (!match) {
+    throw new Error(`Invalid Rupiah amount: "${value}"`);
+  }
+
+  const rupiah = Number(match[1].replace(/\./g, ""));
+  const minorUnits = Number((match[2] ?? "").padEnd(2, "0"));
+
+  const minorUnitsTotal = rupiah * 100 + minorUnits;
+  if (!Number.isSafeInteger(minorUnitsTotal)) {
+    throw new Error(`Rupiah amount is outside the supported range: "${value}"`);
+  }
+
+  return minorUnitsTotal;
+}
+
+async function parseRupiah(value) {
+  if (typeof value === "number") return value;
+  if (!value) return 0;
+
+  const normalized = value.trim().replace(/^Rp\s*/i, "").replace(/\s/g, "");
+  const match = normalized.match(/^(\d+|\d{1,3}(?:\.\d{3})+)(?:,(\d{1,2}))?$/);
+
+  if (!match) {
+    return Number(value.split(',')[0].replace(/\D/g, "")) || 0;
+  }
+
+  return Number(match[1].replace(/\./g, ""));
+}
+
 export {
   sendTelegram,
   screenshot,
@@ -116,4 +149,6 @@ export {
   setCountBT,
   handleElementError,
   swipeSmall,
+  parseRupiahToMinorUnits,
+  parseRupiah
 };
