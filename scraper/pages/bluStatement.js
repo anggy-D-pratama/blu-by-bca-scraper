@@ -33,14 +33,14 @@ export class BluStatement extends BasePage {
         this.wd_data = wd_data;
         try {
             console.log(`start checking for transaction ${wd_data.transaction_no}`);
-            if (state === "init") {
+            if (state === "init" || state === "init/exit") {
                 await this.homepageFlow();
                 await this.historyPageFlow();
             }
             await this.statementPageFlow();
             await this.filterPageFlow();
             await this.mapStatementPageFlow();
-            if (state === "exit") {
+            if (state === "exit" || state === "init/exit") {
                 await this.actions.pause(2 * 1000);
                 await this.client.back()
                 await this.actions.pause(2 * 1000);
@@ -51,6 +51,89 @@ export class BluStatement extends BasePage {
             return this.extractedDetails;
         }
         return this.extractedDetails;
+    }
+
+    /**
+     * Scrape transaksi terbaru di halaman mutasi tanpa filter tanggal spesifik.
+     * Murni mengembalikan array data transaksi.
+     * @param {number} maxTransactions
+     * @returns {Promise<Array<{ref_no: string, status: string, amount: number, bank_account: string, remark: string}>>}
+     */
+    async getLatestStatements(maxTransactions = 20) {
+        const results = [];
+        try {
+            console.log("Mengambil mutasi terbaru dari UI...");
+            await this.homepageFlow();
+            await this.historyPageFlow();
+
+            await this.actions.waitForElement(
+                ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS, 30 * 1000
+            );
+
+            let needSwipe = true;
+            const processedIds = new Set();
+            let oldLastTransactionId = null;
+
+            while (needSwipe && results.length < maxTransactions) {
+                const transactions = await this.actions.findElements(
+                    ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS
+                );
+
+                if (!transactions || transactions.length === 0) break;
+
+                for (const transaction of transactions) {
+                    if (results.length >= maxTransactions) break;
+
+                    const currentId = transaction.elementId;
+                    if (processedIds.has(currentId)) continue;
+
+                    await transaction.click();
+                    await this.actions.waitForElement(ELEMENTS.STATEMENT_PAGE.DETAIL.STATUS, 10 * 1000);
+                    await this.actions.pause(1.5 * 1000);
+
+                    const status = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.STATUS);
+                    const ref_no = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.REF_NO);
+                    const amountStr = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.AMOUNT);
+                    const account = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.ACCOUNT);
+
+                    let remark = "";
+                    if (await this.actions.checkExistingElement(ELEMENTS.STATEMENT_PAGE.DETAIL.NOTE)) {
+                        remark = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.NOTE);
+                    }
+
+                    results.push({
+                        ref_no,
+                        status,
+                        amount: Number(amountStr.replace(/[^0-9]/g, "")),
+                        bank_account: account.replace(/\s+/g, ""),
+                        remark
+                    });
+
+                    processedIds.add(currentId);
+                    await this.client.back();
+                }
+
+                if (results.length >= maxTransactions) break;
+
+                oldLastTransactionId = transactions[transactions.length - 1].elementId;
+                await swipeSmall(this.client, 0, -400);
+                const nextTransactions = await this.actions.findElements(ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS);
+
+                if (nextTransactions.length === 0 || oldLastTransactionId === nextTransactions[nextTransactions.length - 1].elementId) {
+                    needSwipe = false;
+                }
+            }
+
+            // Back ke homepage
+            await this.actions.pause(1 * 1000);
+            await this.client.back();
+            await this.actions.pause(1 * 1000);
+            await this.client.back();
+
+        } catch (err) {
+            await handleElementError(err, this.client);
+        }
+        return results;
     }
 
     async homepageFlow() {
@@ -256,8 +339,8 @@ export class BluStatement extends BasePage {
                         remarkMatch = false;
                     }
                     if (
-                        remarkMatch 
-                        && this.wd_data?.amount === Number(detailAmount.replace(/[^0-9]/g, "")) 
+                        remarkMatch
+                        && this.wd_data?.amount === Number(detailAmount.replace(/[^0-9]/g, ""))
                         && detailAccount.replace(/\s+/g, "").includes(this.wd_data?.bank_account)
                     ) {
                         this.details = {

@@ -1,4 +1,4 @@
-import { setFailedWd, setPendingWd, setProcessWd, setQueueWd } from "../clients/withdraw.js";
+import { setFailedWd, setPendingWd, setProcessWd, setQueueWd, setSuccessWd } from "../clients/withdraw.js";
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
 import { upsertCache } from "../db/cacheRepository.js";
 
@@ -9,7 +9,7 @@ export class WithdrawStatusService {
                 await this.validateProcessAndStatusUpdate(wd_data, statementDatas);
                 break;
             case WD_STATUS.QUEUE:
-                await this.validateQueueAndStatusUpdate(wd_data);
+                await this.validateQueueAndStatusUpdate(wd_data, statementDatas);
                 break;
             case WD_STATUS.PENDING:
                 await this.validatePendingAndStatusUpdate(wd_data, statementDatas);
@@ -46,10 +46,12 @@ export class WithdrawStatusService {
         }
     }
 
-    async validateQueueAndStatusUpdate(wd_data) {
-        // status change available
-        // process, failed, manual
-        // process if wd_data have bankdata or walletdata
+    async validateQueueAndStatusUpdate(wd_data, statementDatas = []) {
+        if (statementDatas?.length > 0) {
+            await this.validatePendingAndStatusUpdate(wd_data, statementDatas);
+            return;
+        }
+
         if (wd_data?.bankData?.length > 0 || wd_data?.walletData?.length > 0) {
             await setProcessWd(wd_data);
             await upsertCache({ ...wd_data, status: WD_STATUS.PROCESS });

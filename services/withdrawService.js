@@ -1,11 +1,12 @@
 import { getDailyLimit } from "../clients/bankAccount.js";
-import { getQueueWithdraws, setFailedWd, setProcessWd, validateWd } from "../clients/withdraw.js";
+import { getQueueWithdraws, setFailedWd, setPendingWd, setProcessWd, validateWd } from "../clients/withdraw.js";
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
 import { ACCOUNT_NUMBER, LIST_CODES } from "../config/index.js";
 import { screenshot, sendTelegram } from "../helper/index.js";
 import { BluTopup } from "../scraper/pages/bluTopup.js";
 import { BluTransfer } from "../scraper/pages/bluTransfer.js";
 import { WithdrawStatusService } from "./withdrawStatusService.js";
+import { findStatementMatch, getCache } from "../db/cacheRepository.js";
 
 export class WithdrawService {
     constructor(client, config) {
@@ -46,6 +47,36 @@ export class WithdrawService {
                             console.error("fail send telegram processing message!", error);
                         }
                         console.log("processing payout with code : " + wd_data.transaction_no);
+
+                        const matchedCache = await getCache(
+                            wd_data?.transaction_no
+                        );
+
+                        if (matchedCache && [WD_STATUS.PENDING, WD_STATUS.SUCCESS, WD_STATUS.PROCESS].includes(matchedCache.status)) {
+                            if (matchedCache.status === WD_STATUS.PENDING) {
+                                await setPendingWd(wd_data);
+                                await sendTelegram(`Data change based on local status to pending : 
+                                    \nlocal cache : ${matchedCache}`);
+                            } else if (matchedCache.status === WD_STATUS.PROCESS) {
+                                await setProcessWd(wd_data);
+                                await sendTelegram(`Data change based on local status to process : 
+                                    \nlocal cache : ${matchedCache}`);
+                            }
+                            continue;
+                        }
+
+                        // Guard: Cek apakah transaksi sudah ada di mutasi lokal SQLite
+                        const matchedStatement = await findStatementMatch({
+                            remark: wd_data.remark,
+                            amount: wd_data.amount,
+                            bank_account: wd_data.bank_account,
+                        });
+
+                        if (matchedStatement) {
+                            console.log(`🛡️ Transaksi ${wd_data.transaction_no} ditemukan di mutasi lokal! Memperbarui status tanpa transfer ulang...`);
+                            await this.withdrawStatusService.resolveNextStatus(wd_data, [matchedStatement]);
+                            continue;
+                        }
 
                         // check transfer or ewallet
                         const bankData = LIST_CODES?.bank?.filter((el) => el.code === wd_data?.bank_code);

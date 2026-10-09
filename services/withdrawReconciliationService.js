@@ -1,10 +1,11 @@
-import { getPendingWithdraws, getProcessWithdraws, setFailedWd, setManualWd, setPendingWd, setQueueWd, setSuccessWd } from "../clients/withdraw.js";
+import { getPendingWithdraws, getProcessWithdraws, setPendingWd } from "../clients/withdraw.js";
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
 import { LIST_CODES } from "../config/index.js";
 import { getDateDifference } from "../helper/dateDifference.js";
 import { sendTelegram } from "../helper/index.js";
 import { BluStatement } from "../scraper/pages/bluStatement.js";
 import { WithdrawStatusService } from "./withdrawStatusService.js";
+import { getCache } from "../db/cacheRepository.js";
 
 export class WithdrawReconciliationService {
     constructor(client, config) {
@@ -25,6 +26,13 @@ export class WithdrawReconciliationService {
 
             if (withdraws?.length > 0) {
                 for (let [index, wd_data] of withdraws.entries()) {
+                    const localCache = await getCache(wd_data.transaction_no);
+                    if (localCache && localCache.status === WD_STATUS.PENDING) {
+                        console.log(`Local cache is PENDING for ${wd_data.transaction_no}, syncing backend and skipping statement sync...`);
+                        await setPendingWd({ ...wd_data, unique_code: localCache.ref_no });
+                        continue;
+                    }
+
                     await sendTelegram(
                         "⚠️⚠️Processing Transaction Found!!" +
                         "[newline]Transaction no :: " + wd_data?.transaction_no +
@@ -35,7 +43,9 @@ export class WithdrawReconciliationService {
                         await this.withdrawStatusService.resolveNextStatus(wd_data);
                     } else {
                         let state = "";
-                        if (index === 0) {
+                        if (index === 0 && withdraws?.length === 1) {
+                            state = "init/exit";
+                        } else if (index === 0) {
                             state = "init";
                         } else if (index === withdraws?.length - 1) {
                             state = "exit";
@@ -73,7 +83,9 @@ export class WithdrawReconciliationService {
                     }
 
                     let state = "";
-                    if (index === 0) {
+                    if (index === 0 && withdraws?.length === 1) {
+                        state = "init/exit";
+                    } else if (index === 0) {
                         state = "init";
                     } else if (index === withdraws?.length - 1) {
                         state = "exit";

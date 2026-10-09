@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { db, checkCacheConnection } from '../db/connection.js';
-import { upsertCache } from '../db/cacheRepository.js';
+import { upsertCache, saveStatements, findStatementMatch } from '../db/cacheRepository.js';
 
 test('cache connection and repository upsert works', async () => {
   await checkCacheConnection();
@@ -24,5 +24,24 @@ test('cache connection and repository upsert works', async () => {
   assert.equal(updatedRow.status, 'process');
 
   await db('withdraw_requests').where({ transaction_no: 'TRX-TEST-001' }).del();
+
+  // Test save & find statement
+  await saveStatements([
+    {
+      ref_no: 'REF-12345',
+      amount: 50000,
+      remark: 'WD-001-TEST',
+      bank_account: '1234567890',
+      status: 'BERHASIL',
+      transaction_date: '2025-05-01'
+    }
+  ]);
+
+  const matched = await findStatementMatch({ remark: 'WD-001-TEST', amount: 50000 });
+  assert.ok(matched);
+  assert.equal(matched.ref_no, 'REF-12345');
+
+  // Cleanup
+  await db('statements').where({ ref_no: 'REF-12345' }).del();
   await db.destroy();
 });
