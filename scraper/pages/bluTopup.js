@@ -138,6 +138,10 @@ export class BluTopup extends BasePage {
 
         await this.actions.pause(2 * 1000);
 
+        console.log("Take evidence of confirmation page");
+        await sendTelegram("Take evidence of confirmation page");
+        await screenshot(this.client);
+
         await this.actions.clickElement(
             ELEMENTS.TOPUP.CONFIRMATION_BTN, true
         );
@@ -146,10 +150,6 @@ export class BluTopup extends BasePage {
         let confirmationBottomSheet = await this.actions.checkExistingElement(
             ELEMENTS.TOPUP.WALLET_DEST_CONFIRMATION
         );
-
-        console.log("Take evidence of confirmation page");
-        await sendTelegram("Take evidence of confirmation page");
-        await screenshot(this.client);
 
         if (confirmationBottomSheet) {
             await screenshot(this.client);

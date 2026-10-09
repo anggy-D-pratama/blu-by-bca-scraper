@@ -101,8 +101,11 @@ Tabel: `withdraw_requests`
 ├── local_cache.db         # SQLite file hasil generate runtime (gitignored)
 ├── config/
 │   └── index.js           # Load dan validasi variable .env
+│   └── axios.js           # Custom fetch dengan membawa behaviour axios
+│   └── constants          # Data statis 
 ├── db/
-│   └── cache.js           # Schema builder & queries tabel `withdraw_requests` (Knex)
+│   └── connection.js      # Schema builder & queries tabel `withdraw_requests` (Knex)
+│   └── *Repository.js     # Query berdasarkan service
 ├── clients/
 │   └── api.js             # HTTP Client (Axios) untuk GET/POST ke backend + logic retry
 ├── scraper/

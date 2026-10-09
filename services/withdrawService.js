@@ -54,13 +54,13 @@ export class WithdrawService {
 
                         if (matchedCache && [WD_STATUS.PENDING, WD_STATUS.SUCCESS, WD_STATUS.PROCESS].includes(matchedCache.status)) {
                             if (matchedCache.status === WD_STATUS.PENDING) {
-                                await setPendingWd(wd_data);
+                                await setPendingWd({ ...wd_data, unique_code: matchedCache?.ref_no });
                                 await sendTelegram(`Data change based on local status to pending : 
-                                    \nlocal cache : ${matchedCache}`);
+                                    \nlocal cache : ${JSON.stringify(matchedCache)}`);
                             } else if (matchedCache.status === WD_STATUS.PROCESS) {
                                 await setProcessWd(wd_data);
                                 await sendTelegram(`Data change based on local status to process : 
-                                    \nlocal cache : ${matchedCache}`);
+                                    \nlocal cache : ${JSON.stringify(matchedCache)}`);
                             }
                             continue;
                         }
