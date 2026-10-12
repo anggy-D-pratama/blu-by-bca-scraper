@@ -107,12 +107,15 @@ export class BluStatement extends BasePage {
                         remark = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.NOTE);
                     }
 
+                    const transaction_date = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.TRANSACTION_DATE);
+
                     results.push({
                         ref_no,
                         status,
                         amount: Number(amountStr.replace(/[^0-9]/g, "")),
                         bank_account: account.replace(/\s+/g, ""),
-                        remark
+                        remark,
+                        transaction_date
                     });
 
                     processedIds.add(currentId);
@@ -375,6 +378,7 @@ export class BluStatement extends BasePage {
             transactions = await this.actions.findElements(
                 ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS
             );
+
             if (oldLastTransactionId === transactions[transactions?.length - 1].elementId) {
                 needSwipe = false;
             }

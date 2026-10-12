@@ -75,6 +75,7 @@ export class BluTransfer extends BasePage {
 
             // NOTE : when account number not found, the app will ask you to input the name of the account manually
             if (isNameInputVisible) {
+                dataResponse.text = "tidak berhasil!";
                 return dataResponse;
             }
 
@@ -132,6 +133,7 @@ export class BluTransfer extends BasePage {
                 await this.client.back();
                 await this.actions.pause(2 * 1000);
                 await this.client.back();
+                dataResponse.text = "tidak berhasil!";
                 return dataResponse;
             }
 
@@ -171,7 +173,7 @@ export class BluTransfer extends BasePage {
             );
 
             dataResponse = {
-                text: transactionStatus.includes("tidak") ? "failed" : "success",
+                text: transactionStatus,
                 ref_no: transactionRefNo
             }
 

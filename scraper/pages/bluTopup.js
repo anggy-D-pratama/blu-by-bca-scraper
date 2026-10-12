@@ -100,6 +100,7 @@ export class BluTopup extends BasePage {
             await this.client.back();
             await this.actions.pause(2 * 1000);
             await this.client.back();
+            this.dataResponse.text = "tidak berhasil!";
             return false;
         }
 
@@ -135,6 +136,7 @@ export class BluTopup extends BasePage {
             await this.client.back();
             await this.actions.pause(2 * 1000);
             await this.client.back();
+            this.dataResponse.text = "tidak berhasil!";
             return false;
         }
 

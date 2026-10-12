@@ -48,7 +48,7 @@ export const ELEMENTS = Object.freeze({
     TRANSACTION_SUMMARY: {
         TRANSFER_SUMMARY_STATUS: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clContainerTop"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvTitle"]`,
         TRANSFER_SUMMARY_NO_REF: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clRef"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvNoRef"]`,
-        TRANSFER_SUMMARY_BACK_BTN: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/btnSecondary"]//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`
+        TRANSFER_SUMMARY_BACK_BTN: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/btnSecondary"]//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`,
     },
     STATEMENT_PAGE: {
         ACCOUNT_BALANCE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvAccountBalance"]`,
@@ -75,7 +75,8 @@ export const ELEMENTS = Object.freeze({
             REF_NO: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clRef"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvNoRef"]`,
             AMOUNT: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvText"]`,
             NOTE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvNote"]`,
-            ACCOUNT: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvText2"]`
+            ACCOUNT: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvText2"]`,
+            TRANSACTION_DATE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvDateTransaction"]`,
         }
     },
     PIN_INPUT: {

@@ -25,6 +25,7 @@ export class BluAuth extends BasePage {
 
     async submitPin() {
         try {
+            await this.actions.waitForElement(ELEMENTS.PIN_INPUT.BTN_0, 30 * 1000);
             await this.actions.pause(2 * 1000);
             let pin = this.config.safe_key;
             let splitPin = pin.split("");

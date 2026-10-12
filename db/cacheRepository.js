@@ -26,9 +26,7 @@ export async function saveStatements(statementList) {
   for (const stmt of statementList) {
     const exists = await db('statements')
       .where({
-        amount: stmt.amount,
-        remark: stmt.remark || null,
-        transaction_date: stmt.transaction_date || null
+        ref_no:stmt.ref_no,
       })
       .first();
       

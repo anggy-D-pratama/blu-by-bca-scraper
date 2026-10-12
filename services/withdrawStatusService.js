@@ -26,8 +26,8 @@ export class WithdrawStatusService {
             // cek statement status
             if (!statement_datas[0]?.status?.toLowerCase().includes("tidak")) {
                 // berhasil = pending
-                await setPendingWd({ ...wd_data, unique_code: statement_datas[0]?.ref_no });
-                await upsertCache({ ...wd_data, ref_no: statement_datas[0]?.ref_no, status: WD_STATUS.PENDING });
+                await setPendingWd({ ...wd_data, unique_code: statement_datas[0]?.refNo });
+                await upsertCache({ ...wd_data, ref_no: statement_datas[0]?.refNo, status: WD_STATUS.PENDING });
             } else {
                 // gagal = failed
                 await setFailedWd(wd_data);
