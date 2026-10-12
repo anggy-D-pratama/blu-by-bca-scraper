@@ -56,25 +56,25 @@ export class BluStatement extends BasePage {
     /**
      * Scrape transaksi terbaru di halaman mutasi tanpa filter tanggal spesifik.
      * Murni mengembalikan array data transaksi.
-     * @param {number} maxTransactions
+     * @param {wd_data.start_at,wd_data.end_at} wd_data 
      * @returns {Promise<Array<{ref_no: string, status: string, amount: number, bank_account: string, remark: string}>>}
      */
-    async getLatestStatements(maxTransactions = 20) {
+    async getLatestStatements(wd_data) {
+        this.wd_data = wd_data;
+        console.log(`checking data dummy wd : `, wd_data);
         const results = [];
         try {
             console.log("Mengambil mutasi terbaru dari UI...");
             await this.homepageFlow();
             await this.historyPageFlow();
-
-            await this.actions.waitForElement(
-                ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS, 30 * 1000
-            );
+            await this.statementPageFlow();
+            await this.filterPageFlow();
 
             let needSwipe = true;
             const processedIds = new Set();
             let oldLastTransactionId = null;
 
-            while (needSwipe && results.length < maxTransactions) {
+            while (needSwipe) {
                 const transactions = await this.actions.findElements(
                     ELEMENTS.STATEMENT_PAGE.STATEMENT_ITEMS
                 );
@@ -82,8 +82,6 @@ export class BluStatement extends BasePage {
                 if (!transactions || transactions.length === 0) break;
 
                 for (const transaction of transactions) {
-                    if (results.length >= maxTransactions) break;
-
                     const currentId = transaction.elementId;
                     if (processedIds.has(currentId)) continue;
 
@@ -121,8 +119,6 @@ export class BluStatement extends BasePage {
                     processedIds.add(currentId);
                     await this.client.back();
                 }
-
-                if (results.length >= maxTransactions) break;
 
                 oldLastTransactionId = transactions[transactions.length - 1].elementId;
                 await swipeSmall(this.client, 0, -400);
@@ -218,7 +214,7 @@ export class BluStatement extends BasePage {
 
         let startDate = await this.extractCurrentDates();
 
-        let diffDate = getDateDifference(startDate, this.wd_data.updated_at);
+        let diffDate = getDateDifference(startDate, this.wd_data.updated_at ?? this.wd_data?.start_at);
 
         await this.navigateFilterDate(1, diffDate?.dayNavigation?.steps, diffDate?.dayNavigation?.direction);
         await this.navigateFilterDate(2, diffDate?.monthNavigation?.steps, diffDate?.monthNavigation?.direction);
@@ -234,7 +230,7 @@ export class BluStatement extends BasePage {
         );
 
         let endDate = await this.extractCurrentDates();
-        diffDate = getDateDifference(endDate, this.wd_data.updated_at);
+        diffDate = getDateDifference(endDate, this.wd_data.updated_at ?? this.wd_data?.end_at);
 
         await this.navigateFilterDate(1, diffDate?.dayNavigation?.steps, diffDate?.dayNavigation?.direction);
         await this.navigateFilterDate(2, diffDate?.monthNavigation?.steps, diffDate?.monthNavigation?.direction);

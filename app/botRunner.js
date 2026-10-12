@@ -76,6 +76,6 @@ export class BotRunner {
     }
 
     async syncStatements() {
-        await this.getStatementService.syncLatestStatements(20);
+        await this.getStatementService.syncLatestStatements();
     }
 }

@@ -1,5 +1,6 @@
 import { BluStatement } from "../scraper/pages/bluStatement.js";
 import { saveStatements } from "../db/cacheRepository.js";
+import { getDateDifference } from "../helper/dateDifference.js";
 
 export class GetStatementService {
     constructor(client, config) {
@@ -8,15 +9,27 @@ export class GetStatementService {
         this.statement = new BluStatement(this.client, this.config);
     }
 
-    /**
-     * Step D: Ekstrak daftar mutasi terbaru dari UI dan simpan ke database lokal SQLite.
-     * @param {number} limit - Jumlah maksimal transaksi yang ingin discrape
-     */
-    async syncLatestStatements(limit = 20) {
+    async syncLatestStatements() {
         try {
             console.log("🔄 [Step D] Syncing latest statements to local DB...");
-            const latestStatements = await this.statement.getLatestStatements(limit);
-            
+
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(today.getDate() - 1);
+
+            const formatDateTime = (d) =>
+                d.toLocaleDateString("en-CA") + " " + d.toTimeString().slice(0, 8);
+
+            const todayStr = formatDateTime(today);
+            const yesterdayStr = formatDateTime(yesterday);
+
+            const statementData = {
+                start_at: yesterdayStr,
+                end_at: todayStr
+            };
+
+            const latestStatements = await this.statement.getLatestStatements(statementData);
+
             if (latestStatements && latestStatements?.length > 0) {
                 console.log(`📥 Menyimpan ${latestStatements.length} statement ke SQLite...`);
                 await saveStatements(latestStatements);
