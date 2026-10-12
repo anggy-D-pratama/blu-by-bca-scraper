@@ -19,12 +19,14 @@ export const ELEMENTS = Object.freeze({
         DIFF_DESTINATION_ACCOUNT_INPUT: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/etAccountNumber"]//android.widget.EditText[@resource-id="com.bcadigital.blu:id/etInput"]`,
         DIFF_DESTINATION_TRANSFER_CEK_BTN: `//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`,
         TRANSFER_AMOUNT_INPUT: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/tiedAmount"]//android.widget.EditText[@resource-id="com.bcadigital.blu:id/etInput"]`,
+        TRANSFER_AMOUNT_INPUT_ERR: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/tiedAmount"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvError"]`,
         TRANSFER_NAME_INPUT: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/tiedRecipientName"]//android.widget.EditText[@resource-id="com.bcadigital.blu:id/etInput" and @text="Nama Penerima"]`,
         TRANSFER_NOTE_INPUT: `//android.widget.EditText[@resource-id="com.bcadigital.blu:id/etInput" and @text="Catatan (Opsional)"]`,
         TRANSFER_CONFIRM_BTN: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/btnNext"]//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`,
         TRANSFER_TOTAL_INFO: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvTotalTransfer"]`,
         TRANSFER_CURRENT_BALANCE_INFO: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvFromBalanceAccount"]`,
-        TRANSFER_BTN: `//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction" and @text="Transfer Sekarang"]`
+        TRANSFER_BTN: `//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction" and @text="Transfer Sekarang"]`,
+
     },
     TOPUP: {
         TITLE_HEADER: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvTitle" and @text="Top Up"]`,

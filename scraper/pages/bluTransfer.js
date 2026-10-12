@@ -55,7 +55,6 @@ export class BluTransfer extends BasePage {
                 true
             );
 
-            console.log("check bankdata : ", bankData[0]);
             await this.lookForBankAndSelect(bankData[0]?.bankName);
 
             await this.actions.enterText(
@@ -79,6 +78,8 @@ export class BluTransfer extends BasePage {
                 return dataResponse;
             }
 
+            await this.actions.waitForElement(ELEMENTS.TRANSFER.TRANSFER_AMOUNT_INPUT, 30 * 1000);
+
             await this.actions.enterText(
                 ELEMENTS.TRANSFER.TRANSFER_AMOUNT_INPUT,
                 wd_data.amount,
@@ -99,6 +100,25 @@ export class BluTransfer extends BasePage {
                 ELEMENTS.TRANSFER.TRANSFER_CONFIRM_BTN,
                 true
             );
+
+            await this.actions.pause(2 * 1000);
+
+            let errText = await this.actions.checkExistingElement(ELEMENTS.TRANSFER.TRANSFER_AMOUNT_INPUT_ERR);
+
+            if (errText) {
+                dataResponse.text = "tidak berhasil!";
+
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+                await this.client.back();
+                await this.actions.pause(2 * 1000);
+
+                return dataResponse;
+            }
 
             // confirmation page
             await this.actions.waitForElement(
@@ -191,9 +211,6 @@ export class BluTransfer extends BasePage {
 
     async lookForBankAndSelect(bankName) {
         try {
-            console.log("check bank name : ", bankName);
-            console.log("check bank name element : ", ELEMENTS.TRANSFER.DIFF_DESTINATION_BANK_OPTION(bankName));
-
             let bankOptionSelecter = await this.actions.checkExistingElement(
                 ELEMENTS.TRANSFER.DIFF_DESTINATION_BANK_OPTION(bankName),
             )
