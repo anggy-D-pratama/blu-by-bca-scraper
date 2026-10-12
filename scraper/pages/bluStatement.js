@@ -92,9 +92,15 @@ export class BluStatement extends BasePage {
                     await this.actions.pause(1.5 * 1000);
 
                     const status = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.STATUS);
-                    const ref_no = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.REF_NO);
+                    let ref_no = "";
+                    if (await this.actions.checkExistingElement(ELEMENTS.STATEMENT_PAGE.DETAIL.REF_NO)) {
+                        ref_no = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.REF_NO);
+                    }
                     const amountStr = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.AMOUNT);
-                    const account = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.ACCOUNT);
+                    let account = "";
+                    if (await this.actions.checkExistingElement(ELEMENTS.STATEMENT_PAGE.DETAIL.ACCOUNT)) {
+                        account = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.DETAIL.ACCOUNT);
+                    }
 
                     let remark = "";
                     if (await this.actions.checkExistingElement(ELEMENTS.STATEMENT_PAGE.DETAIL.NOTE)) {
@@ -139,8 +145,12 @@ export class BluStatement extends BasePage {
     async homepageFlow() {
         await this.actions.waitForElement(
             ELEMENTS.HOMEPAGE.ACCOUNT_CARD,
-            10 * 1000
+            30 * 1000
         );
+
+        if (await this.actions.checkExistingElement(ELEMENTS.HOMEPAGE.MODAL)) {
+            await this.actions.clickElement(ELEMENTS.HOMEPAGE.MODAL_CLS_BTN);
+        }
 
         await this.actions.pause(3 * 1000);
 

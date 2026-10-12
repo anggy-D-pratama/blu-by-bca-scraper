@@ -6,7 +6,10 @@ export const ELEMENTS = Object.freeze({
         NAV_HOME: `//android.widget.FrameLayout[@resource-id="com.bcadigital.blu:id/cvNavHome"]`,
         ACCOUNT_CARD: `//androidx.cardview.widget.CardView[@resource-id="com.bcadigital.blu:id/cvInformation"]`,
         TRANSFER_BTN: `//android.widget.TextView[@text="Transfer"]`,
-        EWALLET_BTN: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvAction2"]`
+        EWALLET_BTN: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvAction2"]`,
+        MODAL: `//android.widget.RelativeLayout[@resource-id="com.bcadigital.blu:id/com_braze_inappmessage_modal_graphic_bound"]`,
+        MODAL_CLS_BTN: `//android.widget.ImageButton[@content-desc="untuk menutup"]`,
+        BOTTOM_SHEET_HOMEPAGE: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clBottomSheetBehaviour"]`
     },
     TRANSFER: {
         NEW_DESTINATION_BTN: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/btnNewTransfer"]`,

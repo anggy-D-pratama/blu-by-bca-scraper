@@ -44,7 +44,7 @@ export class BotRunner {
                 await sendTelegram(`⚠️ Main loop error: ${error.message}`);
             }
             console.log("=== END MAIN LOOP ===\n");
-            await new Promise(r => setTimeout(r, 10000)); // Delay between iterations
+            await new Promise(r => setTimeout(r, 10000 + Math.random() * 20000)); // Delay between iterations (10-30s)
         }
     }
 

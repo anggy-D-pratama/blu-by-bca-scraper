@@ -1,5 +1,5 @@
 import { ELEMENTS } from "../../config/constants/elements.js";
-import { handleElementError, parseRupiah, screenshot, sendTelegram } from "../../helper/index.js";
+import { handleElementError, parseRupiah, screenshot, sendTelegram, swipeSmall } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 import { BluAuth } from "./bluAuth.js";
 
@@ -16,8 +16,12 @@ export class BluTopup extends BasePage {
         try {
             await this.actions.waitForElement(
                 ELEMENTS.HOMEPAGE.TRANSFER_BTN,
-                10 * 1000
+                30 * 1000
             );
+
+            if (await this.actions.checkExistingElement(ELEMENTS.HOMEPAGE.MODAL)) {
+                await this.actions.clickElement(ELEMENTS.HOMEPAGE.MODAL_CLS_BTN);
+            }
 
             await this.actions.pause(3 * 1000);
 
@@ -26,20 +30,22 @@ export class BluTopup extends BasePage {
                 true
             )
 
-            await this.processEWalletPage();
+            let isEwalletPage = await this.processEWalletPage();
+            if (!isEwalletPage) { return this.dataResponse };
 
-            await this.processSelectedEWalletPage();
+            let isSelectedEwalletPage = await this.processSelectedEWalletPage();
+            if (!isSelectedEwalletPage) { return this.dataResponse };
 
             let isConfirm = await this.processConfirmationPage();
+            if (!isConfirm) { return this.dataResponse; }
 
-            if (!isConfirm) {
-                return this.dataResponse;
-            }
             await this.actions.pause(2 * 1000);
             await new BluAuth(this.client, this.config).submitPin();
             await this.actions.pause(3 * 1000);
 
             await this.processSummaryPage();
+
+
 
         } catch (err) {
             await handleElementError(err, this.client);
@@ -91,10 +97,13 @@ export class BluTopup extends BasePage {
             await screenshot(this.client);
 
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
+            return false;
         }
+
+        return true;
     }
 
     async processSelectedEWalletPage() {
@@ -123,14 +132,17 @@ export class BluTopup extends BasePage {
             await screenshot(this.client);
 
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
+            return false;
         }
 
         await this.actions.clickElement(
             ELEMENTS.TOPUP.WALLET_NEXT_BTN, true
         )
+
+        return true;
     }
 
     async processConfirmationPage() {

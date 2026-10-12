@@ -84,7 +84,8 @@ export class WithdrawService {
 
                         // set process wd
                         await this.withdrawStatusService.resolveNextStatus({ ...wd_data, bankData, walletData });
-
+                        wd_data.status = WD_STATUS.PROCESS;
+                        
                         if (bankData?.length > 0 || walletData?.length > 0) {
                             await this.processWithdraw(wd_data, bankData, walletData);
                         } else {

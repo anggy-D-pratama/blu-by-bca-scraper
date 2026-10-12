@@ -13,8 +13,12 @@ export class BluTransfer extends BasePage {
         try {
             await this.actions.waitForElement(
                 ELEMENTS.HOMEPAGE.TRANSFER_BTN,
-                10 * 1000
+                30 * 1000
             );
+
+            if (await this.actions.checkExistingElement(ELEMENTS.HOMEPAGE.MODAL)) {
+                await this.actions.clickElement(ELEMENTS.HOMEPAGE.MODAL_CLS_BTN);
+            }
 
             await this.actions.clickElement(
                 ELEMENTS.HOMEPAGE.TRANSFER_BTN,
@@ -170,6 +174,11 @@ export class BluTransfer extends BasePage {
                 text: transactionStatus.includes("tidak") ? "failed" : "success",
                 ref_no: transactionRefNo
             }
+
+            await this.actions.pause(5 * 1000);
+
+            let checkReviewBottomSheet = await this.actions.checkExistingElement(ELEMENTS.HOMEPAGE.BOTTOM_SHEET_HOMEPAGE);
+            if (checkReviewBottomSheet) { await this.client.back(); }
         } catch (err) {
             await handleElementError(err, this.client);
             return dataResponse;

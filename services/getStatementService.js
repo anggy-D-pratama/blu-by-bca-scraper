@@ -17,7 +17,7 @@ export class GetStatementService {
             console.log("🔄 [Step D] Syncing latest statements to local DB...");
             const latestStatements = await this.statement.getLatestStatements(limit);
             
-            if (latestStatements && latestStatements.length > 0) {
+            if (latestStatements && latestStatements?.length > 0) {
                 console.log(`📥 Menyimpan ${latestStatements.length} statement ke SQLite...`);
                 await saveStatements(latestStatements);
                 console.log("✅ Statements saved to local DB successfully");
