@@ -23,13 +23,8 @@ export function mapBLUStatements(rawStatements, currentBalance, bankAccountId) {
         // 4. amount (integer)
         const amount = parseBluBalance(raw.amount);
 
-        // 3. description
-        //   - ada ref_no → pakai remark
-        //   - ga ada ref_no → merge remark + amount + date
-        const description =
-            raw.ref_no && raw.ref_no !== ""
-                ? raw.remark || ""
-                : `${raw.remark || ""} ${amount} ${txDate || ""}`.trim();
+        // 3. description: note/remark + " | " + amount + " | " + transaction_date
+        const description = `${raw.remark || raw.note || ""} | ${amount} | ${raw.transaction_date || ""}`;
 
         // 5. & 6. running balance (integer)
         const balance = runningBalance;

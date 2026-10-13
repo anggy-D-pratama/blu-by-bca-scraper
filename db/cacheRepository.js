@@ -22,17 +22,35 @@ export async function upsertCache(data) {
 
 export async function saveStatements(statementList) {
   if (!statementList || statementList.length === 0) return;
-  
+
   for (const stmt of statementList) {
-    const exists = await db('statements')
-      .where({
-        ref_no:stmt.ref_no,
-      })
-      .first();
-      
+    let query = db("statements");
+    if (stmt.utr) {
+      query = query.where({ utr: stmt.utr });
+    } else {
+      query = query.where({
+        transaction_date: stmt.transaction_date,
+        description: stmt.description,
+        amount: stmt.amount
+      });
+    }
+
+    const exists = await query.first();
     if (!exists) {
-      await db('statements').insert({
-        ...stmt,
+      await db("statements").insert({
+        transaction_date: stmt.transaction_date,
+        value_date: stmt.value_date,
+        description: stmt.description,
+        amount: stmt.amount,
+        balance: stmt.balance,
+        begin_balance: stmt.begin_balance,
+        is_balance_out: stmt.is_balance_out,
+        source: stmt.source,
+        method_type: stmt.method_type,
+        utr: stmt.utr,
+        transaction_code: stmt.transaction_code,
+        bank_account_id: stmt.bank_account_id,
+        is_synced: false,
         created_at: db.fn.now(),
         updated_at: db.fn.now()
       });
@@ -40,16 +58,29 @@ export async function saveStatements(statementList) {
   }
 }
 
-export async function findStatementMatch({ remark, amount, ref_no, bank_account }) {
-  let query = db('statements');
-  
+export async function getUnsyncedStatements() {
+  return db("statements").where({ is_synced: false });
+}
+
+export async function markStatementsAsSynced(ids) {
+  if (!ids || ids.length === 0) return;
+  return db("statements")
+    .whereIn("id", ids)
+    .update({
+      is_synced: true,
+      updated_at: db.fn.now()
+    });
+}
+
+export async function findStatementMatch({ remark, amount, ref_no }) {
+  let query = db("statements");
+
   if (ref_no) {
-    query = query.where('ref_no', ref_no);
+    query = query.where("utr", ref_no);
   } else {
-    if (amount) query = query.where('amount', amount);
-    if (remark) query = query.where('remark', 'like', `%${remark}%`);
-    if (bank_account) query = query.where('bank_account', bank_account);
+    if (amount) query = query.where("amount", amount);
+    if (remark) query = query.where("description", "like", `%${remark}%`);
   }
-  
-  return query.orderBy('id', 'desc').first();
+
+  return query.orderBy("id", "desc").first();
 }

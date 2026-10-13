@@ -26,15 +26,29 @@ export async function checkCacheConnection() {
   }
 
   const hasStatements = await db.schema.hasTable('statements');
-  if (!hasStatements) {
+  if (hasStatements) {
+    const hasSyncedCol = await db.schema.hasColumn('statements', 'is_synced');
+    if (!hasSyncedCol) {
+      await db.schema.dropTable('statements');
+    }
+  }
+
+  if (!(await db.schema.hasTable('statements'))) {
     await db.schema.createTable('statements', (table) => {
       table.increments('id').primary();
-      table.string('ref_no').nullable().index();
-      table.decimal('amount', 14, 2).notNullable();
-      table.string('remark').nullable().index();
-      table.string('bank_account').nullable().index();
-      table.string('status').notNullable();
-      table.string('transaction_date').nullable();
+      table.string('transaction_date');
+      table.string('value_date');
+      table.text('description');
+      table.integer('amount').notNullable();
+      table.integer('balance').notNullable();
+      table.integer('begin_balance').notNullable();
+      table.boolean('is_balance_out').defaultTo(false);
+      table.string('source').defaultTo('Other');
+      table.string('method_type').defaultTo('BLU');
+      table.string('utr').nullable().index();
+      table.string('transaction_code').nullable();
+      table.integer('bank_account_id').nullable();
+      table.boolean('is_synced').defaultTo(false).notNullable();
       table.timestamps(true, true);
     });
   }

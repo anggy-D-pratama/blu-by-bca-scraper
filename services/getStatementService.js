@@ -1,7 +1,8 @@
 import { BluStatement } from "../scraper/pages/bluStatement.js";
-import { saveStatements } from "../db/cacheRepository.js";
+import { getUnsyncedStatements, markStatementsAsSynced, saveStatements } from "../db/cacheRepository.js";
 import { getDateDifference } from "../helper/dateDifference.js";
 import { mapBLUStatements } from "./statementMapper.js";
+import { bulkBankTransactions } from "../clients/bankTransaction.js";
 
 export class GetStatementService {
     constructor(client, config) {
@@ -44,16 +45,58 @@ export class GetStatementService {
                 this.config?.bank_account_id ?? this.config?.bankAccountId ?? this.config?.id
             );
 
-            console.log("check data mapped statements");
-            console.log(mapped);
-            process.exit(1);
+
             if (mapped.length > 0) {
                 console.log(`📥 Menyimpan ${mapped.length} statement ke SQLite...`);
                 await saveStatements(mapped);
-                console.log("✅ Statements saved to local DB successfully");
-            } else {
-                console.log("ℹ️ No new statements found or empty statement list.");
             }
+
+            // Ambil hanya record lokal yang belum disinkronkan ke BE
+            const unsynced = await getUnsyncedStatements();
+
+            if (unsynced.length === 0) {
+                console.log("ℹ️ Semua statement di local sudah synced ke BE.");
+                return;
+            }
+
+            console.log(`📡 Ditemukan ${unsynced.length} statement unsynced, mengirim ke /bank-transactions/bulk...`);
+            
+            // Format hanya 12 fields kontrak API (buang id, is_synced, created_at, dll)
+            const payload = unsynced.map(({
+                transaction_date,
+                value_date,
+                description,
+                amount,
+                balance,
+                begin_balance,
+                is_balance_out,
+                source,
+                method_type,
+                utr,
+                transaction_code,
+                bank_account_id
+            }) => ({
+                transaction_date,
+                value_date,
+                description,
+                amount,
+                balance,
+                begin_balance,
+                is_balance_out: Boolean(is_balance_out),
+                source,
+                method_type,
+                utr,
+                transaction_code,
+                bank_account_id
+            }));
+
+            await bulkBankTransactions(payload);
+            console.log("✅ Berhasil sync bank transactions ke API backend");
+
+            // Tandai sudah synced hanya setelah request API berhasil
+            const syncedIds = unsynced.map((s) => s.id);
+            await markStatementsAsSynced(syncedIds);
+            console.log(`✅ Berhasil update is_synced = true untuk ${syncedIds.length} statement di SQLite`);
         } catch (error) {
             console.error("❌ Error syncing statements to local DB:", error);
         }
