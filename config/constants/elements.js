@@ -67,6 +67,7 @@ export const ELEMENTS = Object.freeze({
         FILTER_MONTH_CURRENT: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clBottomSheetBehavior"]/android.widget.NumberPicker[2]//android.widget.EditText[@resource-id="android:id/numberpicker_input"]`,
         FILTER_YEAR_CURRENT: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clBottomSheetBehavior"]/android.widget.NumberPicker[3]//android.widget.EditText[@resource-id="android:id/numberpicker_input"]`,
         FILTER_DATE_SUBMIT: `//android.view.ViewGroup[@resource-id="com.bcadigital.blu:id/clButton"]//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`,
+        FILTER_ALL_BALANCE: `//androidx.recyclerview.widget.RecyclerView[@resource-id="com.bcadigital.blu:id/trxFilterTypeRecycler"]/androidx.appcompat.widget.LinearLayoutCompat[1]/android.widget.TextView[@resource-id="com.bcadigital.blu:id/itemTrxFilterText"]`,
         FILTER_OUTGOING_BALANCE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/itemTrxFilterText" and @text="Uang keluar"]`,
         FILTER_SUBMIT_BTN: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/trxFilterButton"]//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnAction"]`,
 

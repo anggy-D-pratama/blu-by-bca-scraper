@@ -1,6 +1,7 @@
 import { BluStatement } from "../scraper/pages/bluStatement.js";
 import { saveStatements } from "../db/cacheRepository.js";
 import { getDateDifference } from "../helper/dateDifference.js";
+import { mapBLUStatements } from "./statementMapper.js";
 
 export class GetStatementService {
     constructor(client, config) {
@@ -30,9 +31,25 @@ export class GetStatementService {
 
             const latestStatements = await this.statement.getLatestStatements(statementData);
 
-            if (latestStatements && latestStatements?.length > 0) {
-                console.log(`📥 Menyimpan ${latestStatements.length} statement ke SQLite...`);
-                await saveStatements(latestStatements);
+            const { current_balance, statements } = latestStatements || {};
+
+            if (!statements || statements.length === 0) {
+                console.log("No new statements found.");
+                return;
+            }
+
+            const mapped = mapBLUStatements(
+                statements,
+                current_balance ?? 0,
+                this.config?.bank_account_id ?? this.config?.bankAccountId ?? this.config?.id
+            );
+
+            console.log("check data mapped statements");
+            console.log(mapped);
+            process.exit(1);
+            if (mapped.length > 0) {
+                console.log(`📥 Menyimpan ${mapped.length} statement ke SQLite...`);
+                await saveStatements(mapped);
                 console.log("✅ Statements saved to local DB successfully");
             } else {
                 console.log("ℹ️ No new statements found or empty statement list.");

@@ -9,6 +9,7 @@ export class BluStatement extends BasePage {
     }
 
     extractedDetails = [];
+    currentBalance = 0;
     details = {
         refNo: "",
         status: "",
@@ -38,7 +39,7 @@ export class BluStatement extends BasePage {
                 await this.historyPageFlow();
             }
             await this.statementPageFlow();
-            await this.filterPageFlow();
+            await this.filterPageFlow("outgoing");
             await this.mapStatementPageFlow();
             if (state === "exit" || state === "init/exit") {
                 await this.actions.pause(2 * 1000);
@@ -138,7 +139,10 @@ export class BluStatement extends BasePage {
         } catch (err) {
             await handleElementError(err, this.client);
         }
-        return results;
+        return {
+            statements: results,
+            current_balance: this.currentBalance
+        };
     }
 
     async homepageFlow() {
@@ -161,10 +165,13 @@ export class BluStatement extends BasePage {
     async historyPageFlow() {
         await this.actions.waitForElement(
             ELEMENTS.STATEMENT_PAGE.ACCOUNT_BALANCE,
-            10 * 1000
+            30 * 1000
         );
 
         await this.actions.pause(2 * 1000);
+
+        this.currentBalance = await this.actions.getText(ELEMENTS.STATEMENT_PAGE.ACCOUNT_BALANCE);
+        console.log(`Current balance : ${this.currentBalance}`);
 
         await this.actions.clickElement(
             ELEMENTS.STATEMENT_PAGE.SHOW_ALL, true
@@ -184,7 +191,7 @@ export class BluStatement extends BasePage {
         );
     }
 
-    async filterPageFlow() {
+    async filterPageFlow(type = "all") {
         await this.actions.waitForElement(
             ELEMENTS.STATEMENT_PAGE.FILTER_LABEL,
             10 * 1000
@@ -198,9 +205,15 @@ export class BluStatement extends BasePage {
 
         await this.navigateDates();
 
-        await this.actions.clickElement(
-            ELEMENTS.STATEMENT_PAGE.FILTER_OUTGOING_BALANCE, true
-        )
+        if (type === "outgoing") {
+            await this.actions.clickElement(
+                ELEMENTS.STATEMENT_PAGE.FILTER_OUTGOING_BALANCE, true
+            )
+        } else if (type === "all") {
+            await this.actions.clickElement(
+                ELEMENTS.STATEMENT_PAGE.FILTER_ALL_BALANCE, true
+            )
+        }
 
         await this.actions.clickElement(
             ELEMENTS.STATEMENT_PAGE.FILTER_SUBMIT_BTN, true
