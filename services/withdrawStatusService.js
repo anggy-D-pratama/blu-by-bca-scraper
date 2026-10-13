@@ -16,7 +16,7 @@ export class WithdrawStatusService {
                 await this.validatePendingAndStatusUpdate(wd_data, statementDatas);
                 break;
             default:
-                // give error handler here!
+                await sendTelegram("Data status not valid!");
                 break;
         }
     }

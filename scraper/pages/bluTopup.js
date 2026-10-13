@@ -200,11 +200,11 @@ export class BluTopup extends BasePage {
             await screenshot(this.client);
 
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
             await this.actions.pause(2 * 1000);
-            await this.actions.back();
+            await this.client.back();
             return false;
         }
 
