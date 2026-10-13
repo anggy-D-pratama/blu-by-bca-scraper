@@ -5,8 +5,9 @@ import { closeSession, openSession } from "./client.js";
 class Scraper {
     terminalProcess = null;
 
-    constructor(config) {
+    constructor(config, bankAdapter) {
         this.config = config;
+        this.bankAdapter = bankAdapter;
         this.client = null;
     }
 
@@ -22,9 +23,9 @@ class Scraper {
             port,
         });
 
-        const client = await openSession(this.config);
-        await client.terminateApp("com.bcadigital.blu");
-        await client.activateApp("com.bcadigital.blu");
+        const client = await openSession(this.config, this.bankAdapter);
+        await client.terminateApp(this.bankAdapter.appPackage);
+        await client.activateApp(this.bankAdapter.appPackage);
 
         return this.client = client;
     }

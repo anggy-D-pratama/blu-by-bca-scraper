@@ -3,15 +3,14 @@ import { getQueueWithdraws, setFailedWd, setPendingWd, setProcessWd, validateWd 
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
 import { ACCOUNT_NUMBER, LIST_CODES } from "../config/index.js";
 import { screenshot, sendTelegram } from "../helper/index.js";
-import { BluTopup } from "../scraper/pages/bluTopup.js";
-import { BluTransfer } from "../scraper/pages/bluTransfer.js";
 import { WithdrawStatusService } from "./withdrawStatusService.js";
 import { findStatementMatch, getCache } from "../db/cacheRepository.js";
 
 export class WithdrawService {
-    constructor(client, config) {
+    constructor(client, config, bankAdapter) {
         this.client = client;
         this.config = config;
+        this.bankAdapter = bankAdapter;
         this.withdrawStatusService = new WithdrawStatusService();
     }
 
@@ -85,7 +84,7 @@ export class WithdrawService {
                         // set process wd
                         await this.withdrawStatusService.resolveNextStatus({ ...wd_data, bankData, walletData });
                         wd_data.status = WD_STATUS.PROCESS;
-                        
+
                         if (bankData?.length > 0 || walletData?.length > 0) {
                             await this.processWithdraw(wd_data, bankData, walletData);
                         } else {
@@ -105,8 +104,8 @@ export class WithdrawService {
     }
 
     async processWithdraw(wd_data, bankData = null, walletData = null) {
-        const transfer = new BluTransfer(this.client, this.config);
-        const topup = new BluTopup(this.client, this.config);
+        const transfer = new this.bankAdapter.TransferPage(this.client, this.config);
+        const topup = new this.bankAdapter.TopupPage(this.client, this.config);
 
         if (bankData?.length > 0) {
             let dataTransfer = await transfer.processTransfer(wd_data, bankData);

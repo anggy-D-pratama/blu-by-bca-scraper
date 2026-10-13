@@ -1,14 +1,14 @@
 import { sendTelegram } from "../helper/index.js";
 import { Scraper } from "../scraper/appiumClient.js";
-import { BluAuth } from "../scraper/pages/bluAuth.js";
 import { WithdrawReconciliationService } from "../services/withdrawReconciliationService.js";
 import { WithdrawService } from "../services/withdrawService.js";
 import { GetStatementService } from "../services/getStatementService.js";
 
 export class BotRunner {
-    constructor(config) {
+    constructor(config, bankAdapter) {
         this.config = config;
-        this.scraper = new Scraper(config);
+        this.bankAdapter = bankAdapter;
+        this.scraper = new Scraper(config, this.bankAdapter);
     }
 
     async start() {
@@ -18,10 +18,10 @@ export class BotRunner {
         const client = await this.scraper.start();
         // database connection check
 
-        this.withdrawService = new WithdrawService(client, this.config);
-        this.withdrawReconsiliationService = new WithdrawReconciliationService(client, this.config);
-        this.getStatementService = new GetStatementService(client, this.config);
-        this.auth = new BluAuth(client, this.config);
+        this.withdrawService = new WithdrawService(client, this.config, this.bankAdapter);
+        this.withdrawReconsiliationService = new WithdrawReconciliationService(client, this.config, this.bankAdapter);
+        this.getStatementService = new GetStatementService(client, this.config, this.bankAdapter);
+        this.auth = new this.bankAdapter.AuthPage(client, this.config);
 
         await this.runAuthFlow();
         await this.mainLoop();
