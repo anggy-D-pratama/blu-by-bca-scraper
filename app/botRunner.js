@@ -16,7 +16,6 @@ export class BotRunner {
             "Launching bot, please make sure the devices are connected!!"
         );
         const client = await this.scraper.start();
-        // database connection check
 
         this.withdrawService = new WithdrawService(client, this.config, this.bankAdapter);
         this.withdrawReconsiliationService = new WithdrawReconciliationService(client, this.config, this.bankAdapter);
