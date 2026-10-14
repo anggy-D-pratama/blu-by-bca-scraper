@@ -1,14 +1,13 @@
-import { BluStatement } from "../scraper/pages/bluStatement.js";
 import { getUnsyncedStatements, markStatementsAsSynced, saveStatements } from "../db/cacheRepository.js";
 import { getDateDifference } from "../helper/dateDifference.js";
-import { mapBLUStatements } from "./statementMapper.js";
 import { bulkBankTransactions } from "../clients/bankTransaction.js";
 
 export class GetStatementService {
-    constructor(client, config) {
+    constructor(client, config, bankAdapter) {
         this.client = client;
         this.config = config;
-        this.statement = new BluStatement(this.client, this.config);
+        this.bankAdapter = bankAdapter;
+        this.statement = new this.bankAdapter.StatementPage(this.client, this.config);
     }
 
     async syncLatestStatements() {
@@ -39,7 +38,7 @@ export class GetStatementService {
                 return;
             }
 
-            const mapped = mapBLUStatements(
+            const mapped = this.bankAdapter.mapStatements(
                 statements,
                 current_balance ?? 0,
                 this.config?.bank_account_id ?? this.config?.bankAccountId ?? this.config?.id
@@ -60,7 +59,7 @@ export class GetStatementService {
             }
 
             console.log(`📡 Ditemukan ${unsynced.length} statement unsynced, mengirim ke /bank-transactions/bulk...`);
-            
+
             // Format hanya 12 fields kontrak API (buang id, is_synced, created_at, dll)
             const payload = unsynced.map(({
                 transaction_date,

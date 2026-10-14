@@ -3,15 +3,15 @@ import { WD_STATUS } from "../config/constants/withdrawStatus.js";
 import { LIST_CODES } from "../config/index.js";
 import { getDateDifference } from "../helper/dateDifference.js";
 import { sendTelegram } from "../helper/index.js";
-import { BluStatement } from "../scraper/pages/bluStatement.js";
 import { WithdrawStatusService } from "./withdrawStatusService.js";
 import { getCache } from "../db/cacheRepository.js";
 
 export class WithdrawReconciliationService {
-    constructor(client, config) {
+    constructor(client, config, bankAdapter) {
         this.client = client;
         this.config = config;
-        this.statement = new BluStatement(this.client, this.config);
+        this.bankAdapter = bankAdapter;
+        this.statement = new this.bankAdapter.StatementPage(this.client, this.config);
         this.withdrawStatusService = new WithdrawStatusService();
     }
 
