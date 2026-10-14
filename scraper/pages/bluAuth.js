@@ -15,6 +15,8 @@ export class BluAuth extends BasePage {
                 ELEMENTS.LOGIN.BTN_LOGIN,
                 true
             )
+
+            await this.submitPin();
         } catch (err) {
             await handleElementError(err, this.client);
             return false;

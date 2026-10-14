@@ -55,11 +55,6 @@ export class BotRunner {
         if (!isLogin) {
             throw new Error("Login failed, cannot proceed.");
         }
-
-        const isPinSubmitted = await this.auth.submitPin();
-        if (!isPinSubmitted) {
-            throw new Error("PIN submission failed, cannot proceed.");
-        }
     }
 
     async checkProcessTransactions() {
