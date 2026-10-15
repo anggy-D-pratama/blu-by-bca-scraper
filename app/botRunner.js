@@ -12,6 +12,11 @@ export class BotRunner {
     }
 
     async start() {
+        await this.startSession();
+        await this.mainLoop();
+    }
+
+    async startSession() {
         await sendTelegram(
             "Launching bot, please make sure the devices are connected!!"
         );
@@ -23,7 +28,6 @@ export class BotRunner {
         this.auth = new this.bankAdapter.AuthPage(client, this.config);
 
         await this.runAuthFlow();
-        await this.mainLoop();
     }
 
     async mainLoop() {
@@ -39,6 +43,14 @@ export class BotRunner {
                 await this.syncStatements();
                 await this.processQueue();
             } catch (error) {
+                if (error.isSessionExpired) {
+                    console.error("Session expired. Restarting bot session...");
+                    await sendTelegram("Blu Session ended. Restart bot.");
+
+                    await this.startSession();
+                    continue;
+                }
+
                 console.error("❌ Error in main loop:", error);
                 await sendTelegram(`⚠️ Main loop error: ${error.message}`);
             }

@@ -82,6 +82,8 @@ export const ELEMENTS = Object.freeze({
             TRANSACTION_DATE: `//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvDateTransaction"]`,
         }
     },
+    BOTTOM_SHEET: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/llBottomSheetBehavior"]`,
+    BOTTOM_SHEET_TITLE: `//android.widget.LinearLayout[@resource-id="com.bcadigital.blu:id/llBottomSheetBehavior"]//android.widget.TextView[@resource-id="com.bcadigital.blu:id/tvTitle"]`,
     PIN_INPUT: {
         BTN_1: `//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnOne"]`,
         BTN_2: `//android.widget.Button[@resource-id="com.bcadigital.blu:id/btnTwo"]`,

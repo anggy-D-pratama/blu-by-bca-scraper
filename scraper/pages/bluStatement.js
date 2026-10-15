@@ -194,7 +194,7 @@ export class BluStatement extends BasePage {
     async filterPageFlow(type = "all") {
         await this.actions.waitForElement(
             ELEMENTS.STATEMENT_PAGE.FILTER_LABEL,
-            10 * 1000
+            30 * 1000
         );
 
         await this.actions.pause(2 * 1000);

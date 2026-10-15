@@ -6,6 +6,7 @@ import sharp from "sharp";
 import { BANKCODE, ACCOUNT_NUMBER } from "../config/index.js";
 import { axios } from "../config/axios.js";
 import { WD_STATUS } from "../config/constants/withdrawStatus.js";
+import { BluSessionCheck } from "../scraper/pages/bluSessionCheck.js";
 let count_bank_transactions = 0;
 
 async function getCountBT() {
@@ -71,6 +72,28 @@ async function screenshot(client, path = "screenshot/photo.png") {
 
 async function handleElementError(err, client, defaultStatus = WD_STATUS.FAILED) {
   if (err.message.match(/not displayed|not found|no such element/i)) {
+
+    const bluSessionCheck = new BluSessionCheck(client, {});
+    const isSessionExpired = await bluSessionCheck.checkBottomSheetSession();
+
+    if (isSessionExpired) {
+      console.log("Session expired detected, bot needs restart");
+
+      // TAKE SS
+      const time = new Date().toISOString().replace(/:/g, '-');
+      await screenshot(client, `./screenshot/session-expired-${time}.png`);
+
+      // SEND NOTIF
+      await sendTelegram(
+        "🔴 Session expired detected! Bot akan di-restart..."
+      );
+
+      // Return special error atau throw custom error untuk trigger restart
+      const sessionError = new Error("SESSION_EXPIRED");
+      sessionError.isSessionExpired = true;
+      throw sessionError;
+    }
+
     // TAKE SS
     const time = new Date().toISOString().replace(/:/g, '-');
     await screenshot(client, `./screenshot/${time}.png`);
