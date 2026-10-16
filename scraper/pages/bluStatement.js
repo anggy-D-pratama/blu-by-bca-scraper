@@ -4,10 +4,6 @@ import { handleElementError, swipeSmall } from "../../helper/index.js";
 import { BasePage } from "./BasePage.js";
 
 export class BluStatement extends BasePage {
-    constructor(client, config) {
-        super(client, config);
-    }
-
     extractedDetails = [];
     currentBalance = 0;
     details = {
@@ -66,6 +62,7 @@ export class BluStatement extends BasePage {
         const results = [];
         try {
             console.log("Mengambil mutasi terbaru dari UI...");
+            
             await this.homepageFlow();
             await this.historyPageFlow();
             await this.statementPageFlow();

@@ -99,6 +99,7 @@ export class WithdrawService {
                 console.log("check wd_data:", wd_data);
             }
         } catch (err) {
+            if (err?.isSessionExpired) throw err;
             console.log("Error processing queue transactions:", err);
         }
     }

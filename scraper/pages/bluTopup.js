@@ -12,7 +12,10 @@ export class BluTopup extends BasePage {
     async processTopup(wd_data, walletData) {
         this.wd_data = wd_data;
         this.walletData = walletData;
-
+        this.dataResponse = {
+            text: "failed",
+            ref_no: ""
+        };
         try {
             await this.actions.waitForElement(
                 ELEMENTS.HOMEPAGE.TRANSFER_BTN,

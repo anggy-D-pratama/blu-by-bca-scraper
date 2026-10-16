@@ -11,17 +11,21 @@ class Scraper {
         this.client = null;
     }
 
-    async start() {
-        const serverUrl = this.config.device;
-        const port = Number(serverUrl.port_appium) || 4723;
+    async start(isRestart = false) {
+        if (!isRestart) {
+            const serverUrl = this.config.device;
+            const port = Number(serverUrl.port_appium) || 4723;
 
-        this.stopAppium({
-            port,
-        });
-        await new Promise((r) => setTimeout(r, 5000));
-        await this.startAppium({
-            port,
-        });
+            this.stopAppium({
+                port,
+            });
+
+            await new Promise((r) => setTimeout(r, 5000));
+
+            await this.startAppium({
+                port,
+            });
+        }
 
         const client = await openSession(this.config, this.bankAdapter);
         await client.terminateApp(this.bankAdapter.appPackage);

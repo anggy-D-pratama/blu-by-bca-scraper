@@ -57,6 +57,7 @@ export class WithdrawReconciliationService {
                 }
             }
         } catch (err) {
+            if (err?.isSessionExpired) throw err;
             console.log("Error processing process transactions:", err);
         }
     }
@@ -97,6 +98,7 @@ export class WithdrawReconciliationService {
                 }
             }
         } catch (err) {
+            if (err?.isSessionExpired) throw err;
             console.log("Error processing pending transactions:", err);
         }
     }

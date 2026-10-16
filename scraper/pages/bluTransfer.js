@@ -220,7 +220,7 @@ export class BluTransfer extends BasePage {
                 await swipeSmall(this.client, 0, -250);
                 this.actions.pause(2 * 1000);
                 // recursive function to swipe and look for the bank option
-                this.lookForBankAndSelect(bankName);
+                await this.lookForBankAndSelect(bankName);
             }
 
             await this.actions.clickElement(ELEMENTS.TRANSFER.DIFF_DESTINATION_BANK_OPTION(bankName), true);

@@ -74,7 +74,7 @@ async function handleElementError(err, client, defaultStatus = WD_STATUS.FAILED)
   if (err.message.match(/not displayed|not found|no such element/i)) {
 
     const bluSessionCheck = new BluSessionCheck(client, {});
-    const isSessionExpired = await bluSessionCheck.checkBottomSheetSession();
+    const isSessionExpired = await bluSessionCheck.checkSessionExpiredClue();
 
     if (isSessionExpired) {
       console.log("Session expired detected, bot needs restart");

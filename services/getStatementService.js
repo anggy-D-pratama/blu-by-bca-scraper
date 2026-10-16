@@ -97,6 +97,7 @@ export class GetStatementService {
             await markStatementsAsSynced(syncedIds);
             console.log(`✅ Berhasil update is_synced = true untuk ${syncedIds.length} statement di SQLite`);
         } catch (error) {
+            if (error?.isSessionExpired) throw error;
             console.error("❌ Error syncing statements to local DB:", error);
         }
     }

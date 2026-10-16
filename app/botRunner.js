@@ -16,11 +16,11 @@ export class BotRunner {
         await this.mainLoop();
     }
 
-    async startSession() {
+    async startSession(isRestart = false) {
         await sendTelegram(
             "Launching bot, please make sure the devices are connected!!"
         );
-        const client = await this.scraper.start();
+        const client = await this.scraper.start(isRestart);
 
         this.withdrawService = new WithdrawService(client, this.config, this.bankAdapter);
         this.withdrawReconsiliationService = new WithdrawReconciliationService(client, this.config, this.bankAdapter);
@@ -47,7 +47,7 @@ export class BotRunner {
                     console.error("Session expired. Restarting bot session...");
                     await sendTelegram("Blu Session ended. Restart bot.");
 
-                    await this.startSession();
+                    await this.startSession(true);
                     continue;
                 }
 
