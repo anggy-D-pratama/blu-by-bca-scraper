@@ -7,9 +7,8 @@ export class BluSessionCheck extends BasePage {
         try {
             const desiredApp = this.client.capabilities.appPackage;
             const appState = await this.client.queryAppState(desiredApp);
-
             if (appState !== APP_STATE.RUNNING_IN_FOREGROUND) {
-                return false;
+                return true;
             }
 
             const loginBtn = await this.actions.checkExistingElement(
