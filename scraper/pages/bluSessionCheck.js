@@ -1,9 +1,17 @@
 import { ELEMENTS } from "../../config/constants/elements.js";
 import { BasePage } from "./BasePage.js";
+import { APP_STATE } from "../../config/constants/appState.js";
 
 export class BluSessionCheck extends BasePage {
     async checkSessionExpiredClue() {
         try {
+            const desiredApp = this.client.capabilities.appPackage;
+            const appState = await this.client.queryAppState(desiredApp);
+
+            if (appState !== APP_STATE.RUNNING_IN_FOREGROUND) {
+                return false;
+            }
+
             const loginBtn = await this.actions.checkExistingElement(
                 ELEMENTS.LOGIN.BTN_LOGIN
             );
